@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load extras %}
+{% load crispy_forms_tags %}
+{% block title %}Socialasia - Network Graph - {{userprofile.user}}{% endblock title %}
+{% comment %} {% load static %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}"> {% endcomment %}
+{% block content %}
+<div class="container home-content text-center">
+    <h3>Network Graph for {{graph.src}} of {{graph.level}} level{{graph.level|pluralize:" ,s"}}</h3>
+    <div class="mb-2 pb-4">
+        <img src="/media/graph_images/graph{{sno}}.png" alt="">
+    </div>
+</div>
+
+
+
+{% endblock content %}

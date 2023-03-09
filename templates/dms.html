@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}Direct messages page - {{userprofile.user.username}}{% endblock title %}
+{% block content %}
+<div class="container home-content">
+	<h3>Your DMs:</h3>
+	<h5>You have messages from {{fromusers|length}} user{{fromusers|length|pluralize}}.</h5>
+	
+	<form action="dmsearch/" method="post">{% csrf_token %}
+		<label>Start a Chat, Look for a User here...
+			<input class="form-control" list="dmsearch" name="dmsearch">
+			<datalist id="dmsearch">
+				<option value="">Select...</option>
+				{% for aop in allotherprofiles %}
+				<option value="{{aop.user}}">{{aop.user.username}}</option>
+				
+				{% endfor %}
+			</datalist>
+		</label>
+		<button type="submit" class="btn btn-dark btn-sm ml-2">Search</button>
+	</form>
+	<hr>
+	<div class="list-group my-2 p-2 col-md-8 offset-md-2">
+		{% for fu in fromusers %}
+		{% if fu.fromuser == userprofile.user %}
+		<a href="/dms/{{fu.touser}}" class="list-group-item list-group-item-action mb-1">
+			<div class="d-flex w-100 justify-content-between d-flex justify-content-between align-items-center">
+				<h5 class="mb-1">
+					{{fu.touser}}
+				</h5>
+				<small>{{fu.timestamp|naturaltime}}</small>
+				<span class="badge badge-primary badge-pill">0</span>
+			</div>
+			<p class="mb-1"><span><b>{{fu.fromuser}}</b> :</span>&nbsp; {{fu.dmtext}}</p>
+		</a>
+		{% else %}
+		<a href="/dms/{{fu.fromuser}}" class="list-group-item list-group-item-action mb-1">
+			<div class="d-flex w-100 justify-content-between d-flex justify-content-between align-items-center">
+				<h5 class="mb-1">
+					{{fu.fromuser}}
+				</h5>
+				<small>{{fu.timestamp|naturaltime}}</small>
+				<span class="badge badge-primary badge-pill">0</span>
+			</div>
+			<p class="mb-1"><span><b>{{fu.fromuser}}</b> :</span>&nbsp; {{fu.dmtext}}</p>
+		</a>
+		{% endif %}
+		{% endfor %}
+
+	</div>
+</div>
+
+{% endblock content %}
+
+<i class='bx bx-user-x' style='color:#FF0000;font-size:xx-large;'></i>

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load extras %}
+{% block title %}Socialasia - Match Prediction{% endblock title %}
+{% comment %} {% load static %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}"> {% endcomment %}
+{% block content %}
+<div class="container home-content">
+    <table class="table table-hover table-dark">
+        <thead>
+        <tr>
+            <th scope="col">USERS / DATA</th>
+            <th scope="col">Sport</th>
+            <th scope="col">Hobby</th>
+            <th scope="col">Age</th>
+            <th scope="col">Gender</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <th scope="row">{{user1profile}}</th>
+            <td>{{sportdict|get_sport:user1profile.sport}}</td>
+            <td>{{hobbydict|get_hobby:user1profile.hobbies}}</td>
+            <td>{{user1profile.age}}</td>
+            <td>{{genderdict|get_gender:user1profile.gender}}</td>
+        </tr>
+        <tr>
+            <th scope="row">{{user2profile}}</th>
+            <td>{{sportdict|get_sport:user2profile.sport}}</td>
+            <td>{{hobbydict|get_hobby:user2profile.hobbies}}</td>
+            <td>{{user1profile.age}}</td>
+            <td>{{genderdict|get_gender:user2profile.gender}}</td>
+        </tr>
+        
+        </tbody>
+    </table>
+    <button type="button" id="result" class="btn btn-lg btn-danger my-4" data-toggle="popover" data-html="true" title="The match is {{predictions.result}}" >Click to see the result.</button>
+
+    
+</div>
+
+
+{% endblock content %}

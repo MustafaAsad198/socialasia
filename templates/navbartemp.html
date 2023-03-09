@@ -1,0 +1,151 @@
+{% comment %} {% load static %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}"> {% endcomment %}
+<header>
+	<nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+		<a class="navbar-brand" href="{% url 'dashboard-index' %}"><i class='bx bxs-message-square-dots logo'
+				style='color:#f1f0f3'></i></a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+			aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+		{% if user.is_authenticated %}
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<form class="form-inline my-2 my-lg-0" method="post" action="/search/"> {% csrf_token %}
+				<input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"
+					name="username">
+				<button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+			</form>
+			<ul class="navbar-nav ml-auto">
+				<li class="nav-item">
+					<a class="nav-link" href="#pirou"><i class='bx bxs-user-check piro-user' style='color:#f3efef'  ></i></a>
+				</li>
+				<li class="nav-item">
+					<a class="nav-link" href="#otherusers"><i class='bx bxs-user-plus other-users' style='color:#f3efef'  ></i></a>
+				</li>
+				<li class="nav-item dropdown dropleft">
+					<a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown"
+					aria-expanded="false">
+					<i class='bx bx-upload upload' style='color:#f3efef'></i>
+				</a>
+				<div class="dropdown-menu">
+					<div class="dropdown-item">
+						<form action="/upload/" method="post" enctype="multipart/form-data"> {% csrf_token %}
+							<div class="form-group">
+								<label for="exampleFormControlFile1">Example file input</label>
+									<input type="file" class="form-control-file" id="exampleFormControlFile1"
+										name="imageupload">
+								</div>
+								<hr>
+								<div class="form-group">
+									<textarea class="form-control" id="exampleFormControlTextarea1" rows="3"
+									placeholder="write a caption..." name="caption"></textarea>
+								</div>
+								<button type="submit" class="btn btn-dark btn-sm ml-2">Upload</button>
+							</form>
+						</div>
+					</div>
+				</li>
+				
+				<li class="nav-item">
+					<button type="button" class="btn" data-toggle="modal" data-target="#exampleModalnotif">
+						<i class='bx bxs-bell-ring bell' style='color:#efecec'></i>
+					</button>
+
+				</li>
+
+				<li class="nav-item">
+					<a class="nav-link" href="{% url 'dms' %}"><i class='bx bxs-message message'
+							style='color:#f3efef'></i></a>
+				</li>
+
+				<li class="nav-item dropdown mr-5">
+					<a class="nav-link dropdown-toggle user-profile-icon mr-5" href="#" role="button"
+						data-toggle="dropdown" aria-expanded="false">
+						<img src="{{userprofile.pfp.url}}" class="rounded-circle img-thumbnail p-0"
+							alt="{{user.username}}">
+					</a>
+					<div class="dropdown-menu">
+						<p class="dropdown-item"><a href="{% url 'profile' user.username %}">{{user.username}}</a>
+						</p>
+						<a class="dropdown-item" href="{% url 'settings' %}">Profile Settings</a>
+						<a class="dropdown-item" href="{% url 'accountsettings' %}">Account Settings</a>
+						<a class="dropdown-item text-danger" href="{% url 'logout' %}">Logout</a>
+					</div>
+				</li>
+			</ul>
+		</div>
+
+		{% endif %}
+	</nav>
+	<div class="modal fade" id="exampleModalnotif" tabindex="-1" aria-labelledby="exampleModalLabelnotif"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-scrollable">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabelnotif">Your Notifications.
+					</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					{% if notifics|length == 0 %}
+					<p>You have no recent notifations.</p>
+					{% else %}
+					{% for noti in notifics %}
+					
+					{% if noti.ntype == 91 %}
+					<div class="row p-1 justify-content-between" id="notif91{{noti.sno}}">
+                        <div class="pl-2">
+                            
+                            <strong><a href="/profile/{{noti.nfromuser.username}}"><span>@{{noti.nfromuser.username}}</span></a></strong> wants to follow you.
+                        </div>
+                        <div class="row px-1 mx-1">
+							<div>
+								<form action="" method="post" class="notif-accept-form" id="{{noti.sno}}"> {% csrf_token %}
+									<input type="hidden" name="anotifsno" id="a{{noti.sno}}" value="{{noti.sno}}" class="acc91">
+                            		<button type="submit" class="btn btn-success btn-sm ml-2">Accept</button>
+								</form>
+							</div>
+							<div>
+								<form action="" class="notif-del-form91" method="post" id="{{noti.sno}}"> {% csrf_token %}
+									<div id="{{noti.sno}}"></div>
+									<input type="hidden" name="notifsno" id="{{noti.sno}}" value="{{noti.sno}}" class="del91">
+									<button type="submit" class="btn btn-danger btn-sm ml-2"> Reject</button>
+
+								</form>
+							</div>
+                        </div>
+                    </div>
+					{% elif noti.ntype == 92 %}
+					<div class="row p-1 justify-content-between" id="notif92{{noti.sno}}">
+                        <div class="pl-2">
+                            
+                            <strong><a href="/profile/{{noti.nfromuser.username}}"><span>@{{noti.nfromuser.username}}</span></a></strong> texted you.
+                        </div>
+                        <div class="row px-1 mx-1">
+							<div>
+								<a href="/dms/{{noti.nfromuser.username}}"><button type="submit" class="btn btn-primary btn-sm ml-2 noti-gotodm"> Go to Dms</button></a>
+								
+							</div>
+							<div>
+								<form action="" class="notif-del-form92" method="post" id="{{noti.sno}}"> {% csrf_token %}
+									<div id="{{noti.sno}}"></div>
+									<input type="hidden" name="notifsno" id="{{noti.sno}}" value="{{noti.sno}}" class="del91">
+									
+									<button type="submit" class="btn btn-danger btn-sm ml-2"> Mark as Read</button>
+
+								</form>
+							</div>
+                        </div>
+                    </div>
+					{% endif %}
+					{% endfor %}
+					{% endif %}
+				</div>
+			</div>
+		</div>
+	</div>
+
+</header>

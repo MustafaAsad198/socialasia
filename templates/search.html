@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Socialasia - Search {% endblock title %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+{% block content %}
+<div class="container home-content">
+    <div class="col-md-8 offset-md-2 my-3 py-2">
+        <div class="card shadow-sm my-2 py-2">
+            <div class="card-header">
+                Search results for {{username}}
+            </div>
+            <div class="card-body py-2">
+                {% if searcheduserprofiles|length == 0 %}
+                <div class="row p-1 justify-content-between">
+                    <div class="pl-2">
+                        Sorry we've got no results for your query 😪
+                    </div>
+                    
+                </div><hr>
+                {% else %}
+                {% for sup in searcheduserprofiles %}
+                <div class="row p-1 justify-content-between">
+                    <div class="pl-2">
+                        <img src="{{sup.pfp.url}}" alt="" width="25px" class="rounded-circle" style="border: solid white 2px;">
+                        <a href="/profile/{{sup.user.username}}"><span>@{{sup.user.username}}</span></a>
+                    </div>
+                    <div>
+                        <a href="/profile/{{sup.user.username}}">View User</a>
+                    </div>
+                </div><hr>
+                {% endfor %}
+                {% endif %}
+                
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock content %}

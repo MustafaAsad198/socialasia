@@ -1,0 +1,243 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load extras %}
+{% load crispy_forms_tags %}
+{% block title %}Socialasia - Home{% endblock title %}
+{% comment %} {% load static %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}"> {% endcomment %}
+{% block content %}
+<div class="container home-content">
+    {% for message in messages %}
+	<div class="alert alert-{{ message.tags }} alert-dismissible mb-2 fade show" role="alert">
+		<strong>{{message}}</strong> 
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	{% endfor %}
+    <div class="row justify-content-between">
+        <div class="col-md-6 offset-md-1 my-2">
+            {% if posts|length == 0 %}
+            <h5>None of the users you are following has posted any recent Post. We suggest you to follow more users to see
+                there their posts.</h5>
+            {% else %}
+            {% for post in posts reversed %}
+            <div class="card shadow my-4" id="post{{post.id}}">
+                <div class="card-header">
+                    <div class="row">
+                        <div class="post-header px-2 w-100 d-flex justify-content-between">
+
+                            {% with post.user|get_prof as profile %}
+                            <div>
+                                <a href="/profile/{{post.user.username}}" class="user-profile-icon">
+
+                                    <img src="{{profile.pfp.url}}" width="40px" class="rounded-circle img-thumbnail"
+                                        alt="u">
+                                    <span>@{{profile.user.username}}</span>
+
+                                </a>
+                            </div>
+                            {% endwith %}
+                            
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="p-2">
+                    <img src="{{post.image.url}}" class="card-img-top my-2" alt="post">
+                </div>
+                <hr>
+                <div class="row justify-content-between">
+                    <div class="lac px-4">
+                        {% if userprofile.user in likedict|get_like:post.id %}
+                        <a href="/like?post_id={{post.id}}"><i class='bx bxs-like like mr-2' style='color:#0c46e2'
+                                id="like{{post.id}}"></i><span class="text-center">{{post.likes}}</span></a>
+                        {% else %}
+                        <a href="/like?post_id={{post.id}}"><i class='bx bxs-like like mr-2'
+                                id="like{{post.id}}"></i><span class="text-center">{{post.likes}}</span></a>
+                        {% endif %}
+                        <a class="ml-3" href="#comment-form"><i class='bx bxs-comment comment'></i></a>
+                    </div>
+                    <div class="dnld px-4">
+                        <a href="{{post.image.url}}" download><i class='bx bxs-download download'></i></a>
+                    </div>
+                </div>
+                <hr>
+                {% with likedict|get_like:post.id as postlikesusers %}
+                <div class="row mx-4 mb-2">
+                    {% if postlikesusers|length == 0 %}
+                    <div class="like-content">
+                        Liked by None till now. </strong>
+                    </div>
+                    {% else %}
+
+                    <div class="row mr-3 like-panel">
+                        {% for plu in postlikesusers %}
+
+                        {% if forloop.counter > 2 %}
+                        {{ break }}
+                        {% else %}
+                        {% with plu|get_prof as profi %}
+                        <img src="{{profi.pfp.url}}" alt="u" width="30px" class="rounded-circle"
+                            style="border: solid white 2px;">
+                        {% endwith %}
+                        {% endif %}
+                        {% endfor %}
+                    </div>
+                    <div class="like-content">
+                        Liked by <strong><a href="/profile/{{postlikesusers|first}}">{{postlikesusers|first}}</a>
+                        </strong> and <strong>{{postlikesusers|length|add:"-1"}}
+                            Other{{postlikesusers|length|add:"-1"|pluralize:" ,s" }} </strong>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endwith %}
+                <hr>
+                <div class="post-caption my-1 p-2">
+                    <p><a href="/profile/{{post.user.username}}"><strong>{{post.user}}</strong></a> &nbsp;
+                        {{post.caption}}</p>
+                    <p> <span class="badge badge-secondary">
+                            {{post.time | naturaltime}} </span></p>
+                </div>
+                <hr>
+                <div class="comments p-2 mb-2 pre-scrollable">
+                    {% for comm in commentdict|get_comment:post.id %}
+                    <div class="user-comment row p-2">
+                        <div class="pl-2">
+                            {% with comm.user|get_prof as profi %}
+                            <img src="{{profi.pfp.url}}" alt="u" width="30px" class="rounded-circle"
+                                style="border: solid white 2px;">
+                            {% endwith %}
+                        </div>
+                        <div class="ml-2 text-dark pb-2 px-2">
+                            <div>
+                                <span><b>{{comm.user}}</b></span>
+                                <span class="badge badge-secondary">
+                                    {{comm.timestamp | naturaltime}} </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="user-comment pl-4 ml-4">
+                        <p class="p-1 comment-text rounded">
+                            {{comm.comment}}</p>
+                    </div>
+                    {% endfor %}
+
+                </div>
+                <form action="" method="post" id="comment-form"> {% csrf_token %}
+                    <div class="input-group input-group-sm mb-3 p-2">
+                        <input type="text" class="form-control" aria-label="Sizing example input"
+                            aria-describedby="inputGroup-sizing-sm" placeholder="add a comment" name="comment"
+                            id="comment">
+                        <input type="hidden" name="postid" value="{{post.id}}" id="postid">
+                        <button type="submit" class="btn btn-dark btn-sm ml-2">Add</button>
+                    </div>
+                </form>
+                {% for message in messages %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>{{message}}</strong>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                {% endfor %}
+
+            </div>
+            {% endfor %}
+            {% endif %}
+
+        </div>
+
+        <div class="col-md-4 my-2">
+            <div class="card my-4 shadow-sm" id="otherusers">
+                <div class="card-header">
+                    Other users you may know -
+                </div>
+
+                <div class="card-body">
+                    {% if profilesuggestion|length == 0 %}
+                    <div class="pl-2">
+                        <p>There is no user left for you to follow. We'll notify you as soon as any other user comes up
+                            or you can invite people on here and have fun!</p>
+                    </div>
+                    {% else %}
+                    {% for profilesuggest in profilesuggestion %}
+                    <div class="row p-1 justify-content-between">
+                        <div class="pl-2">
+                            <img src="{{profilesuggest.pfp.url}}" alt="" width="25px" class="rounded-circle"
+                                style="border: solid white 2px;">
+                            <a
+                                href="/profile/{{profilesuggest.user.username}}"><span>@{{profilesuggest.user.username}}</span></a>
+                        </div>
+                        <div>
+                            <a href="/profile/{{profilesuggest.user.username}}">View User</a>
+                        </div>
+                    </div>
+                    <hr>
+                    {% endfor %}
+                    {% endif %}
+
+
+                </div>
+            </div>
+            {% if pirouser != None %}
+            <div class="card my-4 shadow-sm" id="pirou">
+                <div class="card-header">
+                    AI Pre-match -
+                </div>
+                <div class="card-body">
+                    <form action="" method="post"> {% csrf_token %}
+                        {{ form|crispy }}
+                        <button type="submit" class="btn btn-dark">Submit</button>
+                    </form>
+                </div>
+            </div>
+            {% if pirouser.type == 73 %}
+            
+            <div class="card my-4 shadow-sm">
+                <div class="card-header">
+                    Network Graph -
+                </div>
+                <div class="card-body">
+                    <form action="" method="post" class="m-2 p-4"> {% csrf_token %}
+                        {{ form1|crispy }}
+                        <button type="submit" class="btn btn-dark">View the Network Graph</button>
+                    </form>
+                </div>
+                
+            </div>
+            {% elif pirouser.type == 72 %}
+            <div class="card my-4 shadow-sm">
+                <div class="card-header">
+                    Network Graph -
+                </div>
+                <div class="card-body">
+                    <form action="" method="post" class="m-2 p-4"> {% csrf_token %}
+                        {{ form2|crispy }}
+                        <button type="submit" class="btn btn-dark">View the Network Graph</button>
+                    </form>
+                </div>
+                
+            </div>
+            {% endif %}
+            {% else %}
+            <div class="card my-4 shadow-sm" id="pirou">
+                <div class="card-header">
+                    Become a <b>Piro</b> User -
+                </div>
+
+                <div class="card-body">
+                    <a href="{% url 'piro' %}" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Proceed</a>
+                    <span>Grab the benefits!</span>
+
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+
+
+
+{% endblock content %}

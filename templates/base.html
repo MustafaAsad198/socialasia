@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
+        integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhai+2&family=Bree+Serif&display=swap" rel="stylesheet">
+    <title>{% block title %}{% endblock title %}</title>
+    <style>
+        * {
+            font-family: 'Baloo Bhai 2', cursive;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        a {
+            color: black;
+        }
+
+        a:hover {
+            text-decoration: none;
+        }
+
+        .user-profile-icon {
+            width: 50px;
+        }
+
+        .bell,
+        .message,
+        .logo,
+        .other-users,
+        .piro-user {
+            font-size: xx-large;
+        }
+
+        .upload {
+            font-size: xx-large;
+        }
+
+        button .option-dots {
+            font-size: xx-large;
+        }
+
+        .like,
+        .comment,
+        .download {
+            font-size: xx-large;
+        }
+
+        .home-content {
+            background: linear-gradient(#8080800f, whitesmoke);
+            margin-top: 75px;
+
+        }
+
+        .like-profile {
+            border: solid white 4px;
+            margin-left: -10px;
+        }
+
+        .comment-text {
+            background-color: rgba(128, 128, 128, 0.559);
+            width: fit-content;
+        }
+
+        .piro-prices {
+            height: fit-content;
+        }
+
+        .money {
+            font-size: 50px;
+        }
+
+        .dollar {
+            font-size: xx-large;
+        }
+
+        .card-piro {
+            transition: .3s ease-in-out;
+        }
+
+        .card-header-piro {
+            font-size: xx-large;
+            font-weight: bold;
+        }
+
+        .card-body-piro {
+            padding: 30px 20px;
+        }
+
+        .btn-piro button {
+            border: 2px solid whitesmoke;
+            background-color: whitesmoke;
+            padding: 5px 15px;
+            border-radius: 50px;
+            text-decoration: none;
+            margin: 20px;
+            transition: .5s ease-in-out;
+        }
+
+        .btn-piro button:hover {
+            background-color: #8cccd1;
+            color: whitesmoke;
+            border: none;
+            box-shadow: 0 0 10px 0 rgba(92, 89, 89, 0.986);
+        }
+
+        .card-piro:hover {
+            transform: translateY(-20px);
+            box-shadow: 0 0 10px 0 rgba(92, 89, 89, 0.986);
+        }
+
+        .card-piro:hover .card-header-piro,
+        .card-piro:hover .money,
+        .card-piro:hover .dollar {
+            color: rgb(13, 122, 122);
+        }
+
+        .first-card {
+            transform: translateY(80px);
+            margin-bottom: 108px;
+        }
+
+        .third-card {
+            transform: translateY(80px);
+            margin-bottom: 108px;
+        }
+
+        .second-card {
+            margin-bottom: -49px;
+        }
+
+        .card-title li {
+            list-style-type: none;
+            margin: 0;
+            padding: 0;
+        }
+        .noti-gotodm a{
+            color:white;
+        }
+        .noti-gotodm:hover{
+            color:blue;
+            background:white;
+        }
+    </style>
+
+</head>
+
+<body>
+    {% include 'navbartemp.html' %}
+    {% block content %}{% endblock content %}
+
+    <footer>
+        <div class="my-5 text-center">
+            <p>&copy;2023 <a href="{% url 'dashboard-index' %}"><b>Socialasia</b> </a> | All Rights Reserved.</p>
+        </div>
+    </footer>
+    <!-- Optional JavaScript; choose one of the two! -->
+
+    <!-- Option 1: jQuery and Bootstrap Bundle (includes Popper) -->
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js">
+        <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-Fy6S3B9q64WdZWQUiU+q4/2Lc9npb8tCaSX9FK7E8HnRr0Jz8D6OP9dO5Vg3Q9ct"
+        crossorigin="anonymous"></script>
+    <script type="text/javascript">
+
+        $(document).on('submit','#comment-form',function(e){
+            e.preventDefault();
+        $.ajax({
+            type:'POST',
+        url:'{% url "postcomment" %}',
+        data:
+        {
+            comment:$("#comment").val(),
+        postid:$("#postid").val(),
+        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                },
+        success:function(){
+            alert('Comment posted.');
+        location.reload();
+                    }
+                })
+            });
+
+        delid=null;
+        
+
+        $('.delbtn').on('click',function(e){
+            delid = this.id.toString();
+        });
+
+        
+        $(document).on('submit','#message-del-form',function(e){
+            e.preventDefault();
+        $.ajax({
+            type:'POST',
+        url:'{% url "dmdelete" %}',
+        data:
+        {
+            dmsno:delid,
+        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                },
+        success:function(){
+            alert('Message Deleted.');
+        location.reload();
+                    }
+                })
+            });
+
+        $(document).on('submit','#piro-form-classic',function(e){
+            e.preventDefault();
+        $.ajax({
+            type:'POST',
+        url:'{% url "pirocreate" %}',
+        data:
+        {
+            pirouser:$("#pirouser").val(),
+        type:$("#typeclassic").val(),
+        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                },
+        success:function(){
+            alert('You have been created as a Classic Piro User.');
+        location.reload();
+                    }
+                })
+            });
+        
+        $(document).on('submit','#piro-form-premium',function(e){
+            e.preventDefault();
+        $.ajax({
+            type:'POST',
+        url:'{% url "pirocreate" %}',
+        data:
+        {
+        pirouser:$("#pirouser").val(),
+        type:$("#typepremium").val(),
+        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                },
+        success:function(){
+            alert('You have been created as a Premium Piro User.');
+            location.reload();
+                    }
+                })
+            });
+        
+        
+        $(document).on('submit','#piro-form-booster',function(e){
+            e.preventDefault();
+        $.ajax({
+            type:'POST',
+        url:'{% url "pirocreate" %}',
+        data:
+        {
+        pirouser:$("#pirouser").val(),
+        type:$("#typebooster").val(),
+        csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                },
+        success:function(){
+            alert('You have been created as a Booster Piro User.');
+            location.reload();
+                    }
+                })
+            });
+        
+        
+        
+        delnotifid=null;
+        
+
+        $(document).on('submit','.notif-del-form91',function(e){
+            delnotifid=this.id.toString();
+            notifdel='#notif91'+delnotifid
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+            url:'{% url "notifdelete" %}',
+            data:
+            {
+                notifsno:delnotifid,
+            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                        },
+            success:function(){
+                $(notifdel).css({"display":"none"});
+                //alert('notif Deleted.');
+                            }
+                        })
+                });
+        
+        $(document).on('submit','.notif-accept-form',function(e){
+            accnotifid=this.id.toString();
+            //alert(accnotifid)
+            notifdel='#notif91'+accnotifid
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+            url:'{% url "notifaccept" %}',
+            data:
+            {
+                anotifsno:accnotifid,
+            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                        },
+            success:function(){
+                $(notifdel).css({"display":"none"});
+                //alert('notif Deleted.');
+                            }
+                        })
+                });
+
+
+
+
+
+        $('#result').popover();
+    </script>
+
+    <!-- Option 2: Separate Popper and Bootstrap JS -->
+    <!--
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
+    -->
+</body>
+
+</html>

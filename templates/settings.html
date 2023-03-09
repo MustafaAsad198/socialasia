@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% block title %}Socialasia - Profile Settings{% endblock title %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+{% block content %}
+<div class="container home-content">
+    {% for message in messages %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>{{message}}</strong>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+    <h6 class="pt-1"><a href="{% url 'dashboard-index' %}">Home</a> / Account Settings for {{user.username}}</h6>
+    <hr>
+    {% comment %} 
+    <nav>
+        <div class="nav nav-tabs p-2" id="nav-tab" role="tablist">
+            <button class="nav-link active" id="nav-home-tab" data-toggle="tab" data-target="#nav-home" type="button"
+                role="tab" aria-controls="nav-home" aria-selected="true">General</button>
+            <button class="nav-link" id="nav-extra-tab" data-toggle="tab" data-target="#nav-extra" type="button"
+                role="tab" aria-controls="nav-extra" aria-selected="true">Extra</button>
+        </div>
+    </nav>
+    <form class="my-2 p-2" method="post" action="" enctype="multipart/form-data"> {% csrf_token %}
+        <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+
+                <div class="form-group">
+                    <textarea class="form-control" name="bio" rows="3"
+                        placeholder="Your Bio">{{userprofile.bio}}</textarea>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <input type="text" class="form-control" name="location" placeholder="Your Location"
+                            value={{userprofile.location}}>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="exampleFormControlFile1">Profile Picture</label><img src="{{userprofile.pfp.url}}"
+                            width="40px" alt="">
+                        <input type="file" class="form-control-file" id="exampleFormControlFile1" name="image">
+                    </div>
+
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <input type="number" class="form-control" name="age" placeholder="Your Age"
+                            value={{userprofile.age}}>
+                    </div>
+                </div>
+
+
+            </div>
+            <div class="tab-pane fade" id="nav-extra" role="tabpanel" aria-labelledby="nav-extra-tab">
+
+                <div class="form-group">
+                    <label for="exampleFormControlSelect1">Select Sport</label>
+                    <select class="form-control" id="exampleFormControlSelect1" name="sport">
+                        <option>None</option>
+                        <option>Football</option>
+                        <option>Hockey</option>
+                        <option>Cricket</option>
+                        <option>Basketball</option>
+                        <option>Rugby</option>
+                        <option>Volleyball</option>
+                        <option>Prefer Video Games</option>
+                        <option>Badminton</option>
+                        <option>Tennis</option>
+                        <option>Table Tennis</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="exampleFormControlSelect2">Select Hobby</label>
+                    <select class="form-control" id="exampleFormControlSelect2" name="hobbies">
+                        <option>None</option>
+                        <option>Dancing</option>
+                        <option>Singing</option>
+                        <option>Acting</option>
+                        <option>Reading</option>
+                        <option>Drawing</option>
+                        <option>Writing</option>
+                        <option>Swimming</option>
+                    </select>
+                </div>
+
+
+
+                <button type="submit" class="btn btn-dark">Save</button>
+            </div>
+
+        </div>
+    </form> 
+    {% endcomment %}
+
+    <h4 class="p-2">Update your Profile.</h4>
+    <div class="container my-4 p-2">
+        <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+            {{ form|crispy }}
+            <button type="submit" class="btn btn-dark">Save</button>
+        </form>
+    </div>  
+</div>
+
+
+
+{% endblock content %}

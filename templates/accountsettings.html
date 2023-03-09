@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+{% block title %}Socialasia - Account Settings {% endblock title %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+{% block content %}
+
+<div class="container home-content">
+    <h4>These are some settings regarding your account.</h4>
+    <button type="button" class="btn btn-danger m-4" data-toggle="modal" data-target="#staticBackdropaccdel">
+        Delete your Account?
+    </button>
+    <div class="modal fade" id="staticBackdropaccdel" data-backdrop="static" data-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabelaccdel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="staticBackdropLabelaccdel">⚠ Account Delete Request</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    You surely want to delete your account?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <form action="" method="post"> {% csrf_token %}
+                        <input type="hidden" name="deluser" id="deluser" value="{{userprofile.user.id}}">
+                        <button type="submit" class="btn btn-danger">Delete it!</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+
+{% endblock content %}

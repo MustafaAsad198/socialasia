@@ -1,0 +1,203 @@
+{% extends 'base.html' %}
+{% block title %}Socialasia - {{vieweduserprofile.user.username}}'s Profile {% endblock title %}
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+{% block content %}
+
+<div class="container home-content">
+    {% for message in messages %}
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>{{message}}</strong>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    {% endfor %}
+    <h6><a href="{% url 'dashboard-index' %}">Home</a> / Profile of {{vieweduserprofile.user.username}}</h6>
+    <hr>
+    <div class="row p-3">
+        <div class="col-md-4">
+            <div class="pfp">
+                <img src="{{vieweduserprofile.pfp.url}}" width="200px" class="rounded-circle img-thumbnail" alt="u">
+            </div><br>
+            <h3 class="ml-4">@{{vieweduserprofile.user.username}}
+                {% if pirouser != None and pirouser.type == 73 %}
+                <span><i class='bx bxs-badge-check' style='color:#1ed818'></i></span>
+                {% endif %}
+            </h3>
+            <span class="ml-4">
+                {% if pirouser != None %}
+                {% if pirouser.type == 71 %}
+                <i class='bx bxs-message-square-check bx-flip-horizontal bx-burst' style='color:#b8860b;font-size:xx-large;' ></i> #A Classic Piro User.
+                {% elif pirouser.type == 72 %}
+                <i class='bx bxs-message-square-check bx-flip-horizontal bx-burst' style='color:#a29e9e;font-size:xx-large;'  ></i> #A Booster Piro User.
+                {% else %}
+                <i class='bx bxs-message-square-check bx-flip-horizontal bx-burst' style='color:#ffd700;font-size:xx-large;'  ></i> #A Premium Piro User.
+                {% endif %}
+                {% elif vieweduserprofile.user == userprofile.user %}
+                <a href="{% url 'piro' %}">Wanna show off a Piro Badge here?</a>
+                {% endif %}
+            </span>
+        </div>
+        <div class="col-md-8">
+            <a href="#posts"><button type="button" class="btn btn-primary m-4">
+                    Posts <span class="badge badge-light">{{userposts|length}}</span>
+                </button></a>
+
+
+            <!--Followers Button trigger modal -->
+            <button type="button" class="btn btn-primary m-4" data-toggle="modal" data-target="#exampleModalFollowers">
+                Followers <span class="badge badge-light">{{followersprofile|length}}</span>
+            </button>
+            <!--Followers Modal -->
+            <div class="modal fade" id="exampleModalFollowers" tabindex="-1" aria-labelledby="exampleModalLabel1"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel1">{{vieweduserprofile.user.username}}'s
+                                Followers</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            {% for followerprofile in followersprofile %}
+                            <div class="p-1">
+                                <div class="pl-2">
+                                    <img src="{{followerprofile.pfp.url}}" alt="" width="25px" class="rounded-circle"
+                                        style="border: solid white 2px;">
+                                    <a
+                                        href="/profile/{{followerprofile.user.username}}"><span>@{{followerprofile.user.username}}</span></a>
+                                </div>
+
+                            </div>
+                            <hr>
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <!--Following Button trigger modal -->
+            <button type="button" class="btn btn-primary m-4" data-toggle="modal" data-target="#exampleModal">
+                Following <span class="badge badge-light">{{followingprofile|length}}</span>
+            </button>
+            <!--Following Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">{{vieweduserprofile.user.username}} Following
+                            </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            {% for followi in followingprofile %}
+                            <div class="p-1">
+                                <div class="pl-2">
+                                    <img src="{{followi.pfp.url}}" alt="" width="25px" class="rounded-circle"
+                                        style="border: solid white 2px;">
+                                    <a
+                                        href="/profile/{{followi.user.username}}"><span>@{{followi.user.username}}</span></a>
+                                </div>
+
+                            </div>
+                            <hr>
+                            {% endfor %}
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+
+
+            <form action="/follow/" method="post"> {% csrf_token %}
+                <input type="hidden" name="user" value="{{vieweduserprofile.user.username}}">
+                <input type="hidden" name="follower" value="{{user.username}}">
+                <button type="submit" class="btn btn-dark">{{followbutton}}</button>
+            </form><br>
+            <div class="bio">
+                <p>{{vieweduserprofile.bio}}</p>
+            </div>
+            <div class="loc">
+                <i class='bx bxs-map'></i><span>{{vieweduserprofile.location}}</span>
+            </div>
+        </div>
+    </div>
+    {% if vieweduserprofile.user == userprofile.user %}
+    <div class="dropright">
+        <button class="btn btn-transparent dropdown-toggle" type="button" data-toggle="dropdown"
+            aria-expanded="false">More Actions </button>
+        <div class="dropdown-menu">
+            <button type="button" class="btn btn-transparent dropdown-item" data-toggle="modal"
+                data-target="#exampleModal2">
+                Delete Posts
+            </button>
+        </div>
+    </div>
+    <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel2">⚠ Delete Post</h5>
+
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div><br>
+                <h6 class="px-4">Check ☑ the Posts you want to delete.</h6>
+                <hr>
+
+                <div class="modal-body">
+                    <form action="" method="post" id="post-del-form"> {% csrf_token %}
+                        {% for post in userposts %}
+                        <div class="col mb-4">
+                            <div class="input-group-text">
+                                <input type="checkbox" id="{{post.id}}" aria-label="Checkbox for following text input"
+                                    name="delcheck" value="{{post.id}}">
+                            </div>
+                            <div class="card h-100">
+                                <img src="{{post.image.url}}" class="card-img-top w-25" alt="post photo">
+                            </div>
+                            <span>{{post.caption}}</span>
+                        </div>
+                        {% endfor %}
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </div>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <hr><br>
+    {% if vieweduserprofile.user == userprofile.user or not vieweduserprofile.private %}
+    <div class="row row-cols-1 row-cols-md-3" id="posts">
+        {% for post in userposts %}
+        <div class="col mb-4">
+            <div class="card">
+                <a href="{{post.image.url}}"><img src="{{post.image.url}}" class="card-img-top" alt="post photo"></a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center pb-4">
+        <div style="font-size:xxx-large;"><i class='bx bxs-lock-alt'></i></div>
+        This Profile is private. You need to follow this user to view their posts.
+    </div>
+    {% endif %}
+</div>
+
+
+{% endblock content %}

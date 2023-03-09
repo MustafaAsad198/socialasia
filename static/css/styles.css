@@ -1,0 +1,34 @@
+a{
+    color: black;
+}
+a:hover{
+    text-decoration: none;
+}
+.user-profile-icon{
+    width: 50px;
+}
+
+.bell,.message,.logo{
+    font-size: xx-large;
+}
+.upload{
+    font-size: xx-large;
+}
+button .option-dots{
+    font-size: xx-large;
+}
+.like,.comment,.download{
+    font-size: xx-large;
+}
+.home-content{
+    background:linear-gradient(#8080800f,whitesmoke);
+    margin-top: 75px;
+}
+.like-profile{
+    border: solid white 4px;
+    margin-left: -10px;
+}
+
+.comment-text{
+    background-color: rgba(128, 128, 128, 0.559);
+}

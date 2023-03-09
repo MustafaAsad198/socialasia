@@ -1,0 +1,291 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load extras %}
+{% block title %}{{userprofile.user.username}}'s DM with {{slug}}{% endblock title %}
+{% block content %}
+<div class="container home-content">
+    <h3>Chatting with {{slug}}...</h3><a href="#sendbtn"><i class='bx bxs-down-arrow-square bx-flip-horizontal bx-fade-up' style='color:#3d3838; font-size:xxx-large;' ></i></a>
+    {% for adm in alldms %}
+    {% if adm.fromuser.username == userprofile.user.username %}
+        {% comment %} from user side {% endcomment %}
+        <div class="row ml-auto my-3 border border-success rounded-left py-2 mx-0 w-75 shadow p-3 mb-5 bg-secondary rounded">
+            <div class="col-md-1"><img class="rounded-circle d-block border border-dark"
+                    src="{{adm.fpfp.pfp.url}}" alt="user_icon" width="40px">
+            </div>
+            <div class="col-md-11"><b>{{adm.fromuser}}</b> <span class="badge badge-light text-dark">
+                    {{adm.timestamp | naturaltime}} </span>
+                {% if adm.fromuser == userprofile.user  %}
+                    <span class="dropright">
+                        <button class="btn btn-transparent dropdown-toggle" type="button" data-toggle="dropdown"
+                            aria-expanded="false"></button>
+                        <div class="dropdown-menu">
+                            <button type="button" class="btn btn-transparent dropdown-item" data-toggle="modal"
+                                data-target="#staticBackdrop{{adm.sno}}">
+                                Delete Message
+                            </button>
+                        </div>
+                </span>
+                <div class="modal fade" id="staticBackdrop{{adm.sno}}" data-backdrop="static" data-keyboard="false"
+                            tabindex="-1" aria-labelledby="staticBackdropLabel{{adm.sno}}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="staticBackdropLabel{{adm.sno}}">⚠ Delete Message</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Are you sure, you want to delete this Message?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Cancel</button>
+                                        <form action="" method="post" id="message-del-form"> {% csrf_token %}
+                                            <input type="hidden" name="dmsno" value="{{adm.sno}}" id="dmsno">
+                                            <button type="submit" class="btn btn-danger delbtn" id="{{adm.sno}}">Delete</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                </div>
+                {% endif %}
+                    
+                <div class="text-white">
+                    {{adm.dmtext}}
+                </div>
+                <div class="reply mx-0 my-2">
+                    <button class="btn btn-sm btn-outline-light my-4 my-sm-0" type="button" data-toggle="collapse"
+                        data-target="#replybox{{adm.sno}}" aria-expanded="false"
+                        aria-controls="replybox{{adm.sno}}">
+                        Reply
+                    </button>
+                    <div class="collapse" id="replybox{{adm.sno}}">
+                        <div class="card card-body my-2">
+                            <form action="postdm/" method="post">{% csrf_token %}
+                                <div class="form-group">
+                                    <label for="chat">Put Down Your Reply</label>
+                                    <textarea class="form-control" name="chat" rows="1"
+                                            placeholder="Type your reply"></textarea>
+                                    <input type="hidden" name="parentsno" value="{{adm.sno}}">
+                                </div>
+                                
+                                <input type="hidden" name="fromuser" value="{{userprofile.user}}">
+                                <input type="hidden" name="touser" value="{{touserprofile.user}}">
+                                
+                                <button type="submit" class="btn btn-outline-dark my-2 my-sm-0">Send Reply</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="replies">
+                    {% for reply in repdict|get_val:adm.sno %}
+                    <div class="row my-2">
+                        <div class="col-md-1 my-2"><img class="rounded mx-auto d-block w-75 border border-dark"
+                                src="{{reply.fpfp.pfp.url}}" alt="user_icon">
+                        </div>
+                        <div class="col-md-11">
+                            <b> {{reply.fromuser}} replied </b> &nbsp; <span class="badge badge-light">
+                                {{reply.timestamp | naturaltime}} </span>
+                                {% if reply.fromuser == userprofile.user  %}
+                                <span class="dropright">
+                                    <button class="btn btn-transparent dropdown-toggle" type="button" data-toggle="dropdown"
+                                        aria-expanded="false"></button>
+                                    <div class="dropdown-menu">
+                                        <button type="button" class="btn btn-transparent dropdown-item" data-toggle="modal"
+                                            data-target="#staticBackdrop{{reply.sno}}">
+                                            Delete Message
+                                        </button>
+                                    </div>
+                            </span>
+                            <div class="modal fade" id="staticBackdrop{{reply.sno}}" data-backdrop="static" data-keyboard="false"
+                                        tabindex="-1" aria-labelledby="staticBackdropLabel{{reply.sno}}" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="staticBackdropLabel{{reply.sno}}">⚠ Delete Message</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>Are you sure, you want to delete this Message?</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal">Cancel</button>
+                                                    <form action="" method="post" id="message-del-form"> {% csrf_token %}
+                                                        <input type="hidden" name="dmsno" value="{{reply.sno}}" id="dmsno">
+                                                        <button type="submit" class="btn btn-danger delbtn" id="{{reply.sno}}">Delete</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="text-white">
+                                {{reply.dmtext}}
+                            </div>
+                            <hr>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div> 
+        {% else %}
+        {% comment %} to user side {% endcomment %}
+        <div class="row my-3 border border-success rounded-right py-2 mx-0 w-75 shadow p-3 mb-5 bg-white rounded">
+            <div class="col-md-1"><img class="rounded-circle d-block border border-dark"
+                    src="{{adm.fpfp.pfp.url}}" alt="user_icon" width="40px">
+            </div>
+            <div class="col-md-11"><b>{{adm.fromuser}}</b> <span class="badge badge-secondary">
+                    {{adm.timestamp | naturaltime}} </span>
+                    {% if adm.fromuser == userprofile.user  %}
+                    <span class="dropright">
+                        <button class="btn btn-transparent dropdown-toggle" type="button" data-toggle="dropdown"
+                            aria-expanded="false"></button>
+                        <div class="dropdown-menu">
+                            <button type="button" class="btn btn-transparent dropdown-item" data-toggle="modal"
+                                data-target="#staticBackdrop{{adm.sno}}">
+                                Delete Message
+                            </button>
+                        </div>
+                </span>
+                <div class="modal fade" id="staticBackdrop{{adm.sno}}" data-backdrop="static" data-keyboard="false"
+                            tabindex="-1" aria-labelledby="staticBackdropLabel{{adm.sno}}" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="staticBackdropLabel{{adm.sno}}">⚠ Delete Message</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <p>Are you sure, you want to delete this Message?</p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary"
+                                            data-dismiss="modal">Cancel</button>
+                                        <form action="" method="post" id="message-del-form"> {% csrf_token %}
+                                            <input type="hidden" name="dmsno" value="{{adm.sno}}" id="dmsno">
+                                            <button type="submit" class="btn btn-danger delbtn" id="{{adm.sno}}">Delete</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                </div>
+                {% endif %}
+                <div>
+                    {{adm.dmtext}}
+                </div>
+                <div class="reply mx-0 my-2">
+                    <button class="btn btn-sm btn-outline-dark my-4 my-sm-0" type="button" data-toggle="collapse"
+                        data-target="#replybox{{adm.sno}}" aria-expanded="false"
+                        aria-controls="replybox{{adm.sno}}">
+                        Reply
+                    </button>
+                    <div class="collapse" id="replybox{{adm.sno}}">
+                        <div class="card card-body my-2">
+                            <form action="postdm/" method="post">{% csrf_token %}
+                                <div class="form-group">
+                                    <label for="chat">Put Down Your Reply</label>
+                                    <textarea class="form-control" name="chat" rows="1"
+                                            placeholder="Type your reply"></textarea>
+                                    <input type="hidden" name="parentsno" value="{{adm.sno}}">
+                                </div>
+                                
+                                <input type="hidden" name="fromuser" value="{{userprofile.user}}">
+                                <input type="hidden" name="touser" value="{{touserprofile.user}}">
+                                
+                                <button type="submit" class="btn btn-outline-dark my-2 my-sm-0">Send Reply</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="replies">
+                    {% for reply in repdict|get_val:adm.sno %}
+                    <div class="row my-2">
+                        <div class="col-md-1 my-2"><img class="rounded mx-auto d-block w-75 border border-dark"
+                                src="{{reply.fpfp.pfp.url}}" alt="user_icon">
+                        </div>
+                        <div class="col-md-11">
+                            <b> {{reply.fromuser}} replied </b> &nbsp;<span class="badge badge-secondary text-light">
+                                {{reply.timestamp | naturaltime}} </span>
+                                {% if reply.fromuser == userprofile.user  %}
+                                <span class="dropright">
+                                    <button class="btn btn-transparent dropdown-toggle" type="button" data-toggle="dropdown"
+                                        aria-expanded="false"></button>
+                                    <div class="dropdown-menu">
+                                        <button type="button" class="btn btn-transparent dropdown-item" data-toggle="modal"
+                                            data-target="#staticBackdrop{{reply.sno}}">
+                                            Delete Message
+                                        </button>
+                                    </div>
+                            </span>
+                            <div class="modal fade" id="staticBackdrop{{reply.sno}}" data-backdrop="static" data-keyboard="false"
+                                        tabindex="-1" aria-labelledby="staticBackdropLabel{{reply.sno}}" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="staticBackdropLabel{{reply.sno}}">⚠ Delete Message</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <p>Are you sure, you want to delete this Message?</p>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                        data-dismiss="modal">Cancel</button>
+                                                    <form action="" method="post" id="message-del-form"> {% csrf_token %}
+                                                        <input type="hidden" name="dmsno" value="{{reply.sno}}" id="dmsno">
+                                                        <button type="submit" class="btn btn-danger delbtn" id="{{reply.sno}}">Delete</button>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                            </div>
+                            {% endif %}
+                            <div>
+                                {{reply.dmtext}}
+                            </div>
+                            <hr>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div> 
+    {% endif %}
+    {% endfor %}
+    <div class="my-2 p-2">
+        <form action="postdm/" method="post">{% csrf_token %}
+            <div class="form-group">
+                <label for="chat">Drop a message</label>
+                <textarea class="form-control" name="chat" rows="2"
+                        placeholder="Type your messsage here..."></textarea>
+            </div>
+            <input type="hidden" name="fromuser" value="{{userprofile.user}}">
+            <input type="hidden" name="touser" value="{{touserprofile.user}}">
+            <input type="hidden" name="parentsno" value="">
+            <button type="submit" class="btn btn-outline-dark my-2 my-sm-0" id="sendbtn">Send</button>
+        </form>
+    </div>
+    {% for message in messages %}
+	<div class="alert alert-{{ message.tags }} alert-dismissible mb-2 fade show" role="alert">
+		<strong>{{message}}</strong> 
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	{% endfor %}
+    
+</div>
+
+{% endblock content %}

@@ -1,0 +1,278 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load extras %}
+{% load crispy_forms_tags %}
+{% block title %}Socialasia - Piro Register{% endblock title %}
+
+
+
+{% comment %} {% load static %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}"> {% endcomment %}
+{% block content %}
+<div class="container home-content">
+    <h5 class="p-1">Wanna try something more? Get a Chance to become a Piro User...</h5>
+    <h6>And we have got <span style="font-size:xx-large;">SURPRISES</span> for you!🎉</h6>
+    <div class="container text-center" style="margin-bottom: 35px;">
+        <h1 class="text-center" style="font-weight: bold;">WHAT WE OFFER?</h1>
+        <p>Which plan entices you❔</p>
+    </div>
+    <div class="row piro-prices">
+        <div class="col-lg-4 col-12 first-card">
+            <div class="card text-center card-piro">
+                <div class="card-header card-header-piro">
+                    CLASSIC
+                </div>
+                <div class="card-body card-body-piro">
+                    <h5 class="card-title">
+                        <li><i class='bx bx-money bx-flip-horizontal bx-burst' style='color:#ecea0c'></i>&nbsp; <span
+                                class="dollar"> $</span><span class="money">2</span>/ Week</li><br>
+                        <li><i class='bx bxs-checkbox-checked bx-flip-horizontal bx-burst'
+                                style='color:#0de616'></i>&nbsp; Weekly benefits.</li><br>
+                        <li><i class='bx bxs-checkbox-checked bx-flip-horizontal bx-burst'
+                                style='color:#0de616'></i>&nbsp; Get a Bronze Piro tag on your profile.</li><br>
+                        <li><i class='bx bxs-checkbox-checked bx-flip-horizontal bx-burst'
+                                style='color:#0de616'></i>&nbsp; Access to AI Pre-Match.</li><br>
+                        <li><i class='bx bxs-x-square bx-flip-horizontal bx-burst' style='color:#ec0c3a'></i>&nbsp;
+                            Access to your Network Graph.</li><br>
+                        <li><i class='bx bxs-x-square bx-flip-horizontal bx-burst' style='color:#ec0c3a'></i>&nbsp;
+                            Get a verfied patch on your profile.</li><br>
+                        <li><i class='bx bxs-x-square bx-flip-horizontal bx-burst' style='color:#ec0c3a'></i>&nbsp; Can
+                            get a opportunity to work with us. <span style="font-size:small;">(We will go through your
+                                profile and approach to you on finding it utilitarian.)</li><br>
+                    </h5>
+                    <hr>
+                    <div class="btn btn-piro">
+                        <button type="button" class="btn" data-toggle="modal" data-target="#exampleModalclassic">
+                            PURCHASE
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 col-12 second-card">
+            <div class="card text-center card-piro">
+                <div class="card-header card-header-piro">
+                    PREMIUM
+                </div>
+                <span style="padding-top: 5px;"><i><b>Users' Choice</b></i> </span>
+                <div class="card-body card-body-piro">
+                    <h5 class="card-title">
+                        <li><i class='bx bx-money bx-flip-horizontal bx-burst' style='color:#ecea0c'></i>&nbsp; <span
+                                class="dollar"> $</span><span class="money">99</span>/ Year</li><br>
+                        <li><i class='bx bxs-checkbox-checked bx-flip-horizontal bx-burst'
+                                style='color:#0de616'></i>&nbsp; Yearly benefits.</li><br>
+                        <li><i class='bx bxs-checkbox-checked bx-flip-horizontal bx-burst'
+                                style='color:#0de616'></i>&nbsp; Get a Gold Piro tag on your profile.</li><br>
+                        <li><i class='bx bxs-checkbox-checked bx-flip-horizontal bx-burst'
+                                style='color:#0de616'></i>&nbsp; Access to AI Pre-Match.</li><br>
+                        <li><i class='bx bxs-checkbox-checked bx-flip-horizontal bx-burst'
+                                style='color:#0de616'></i>&nbsp; Access to your Network Graph.<span
+                                style="font-size:small;">(Enables generation of Network Graph for you as well your followers.)</span></li><br>
+                        <li><i class='bx bxs-checkbox-checked bx-flip-horizontal bx-burst'
+                                style='color:#0de616'></i>&nbsp; Get a verfied patch on your profile for a whole year!
+                            Woohoo!</li><br>
+                        <li><i class='bx bxs-checkbox-checked bx-flip-horizontal bx-burst'
+                                style='color:#0de616'></i>&nbsp; Can get a opportunity to work with us. <span
+                                style="font-size:small;">(We will go through your profile and approach to you on finding
+                                it utilitarian.)</span> </li><br>
+                    </h5>
+                    <hr>
+                    <div class="btn btn-piro">
+                        <button type="button" class="btn" data-toggle="modal" data-target="#exampleModalpremium">
+                            PURCHASE
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-12 third-card">
+            <div class="card text-center card-piro">
+                <div class="card-header card-header-piro">
+                    BOOSTER
+                </div>
+                <div class="card-body card-body-piro">
+                    <h5 class="card-title">
+                        <li><i class='bx bx-money bx-flip-horizontal bx-burst' style='color:#ecea0c'></i>&nbsp; <span
+                                class="dollar"> $</span><span class="money">7</span>/ Month</li><br>
+                        <li><i class='bx bxs-checkbox-checked bx-flip-horizontal bx-burst'
+                                style='color:#0de616'></i>&nbsp; Monthly benefits.</li><br>
+                        <li><i class='bx bxs-checkbox-checked bx-flip-horizontal bx-burst'
+                                style='color:#0de616'></i>&nbsp; Get a Silver Piro tag on your profile.</li><br>
+                        <li><i class='bx bxs-checkbox-checked bx-flip-horizontal bx-burst'
+                                style='color:#0de616'></i>&nbsp; Access to AI Pre-Match.</li><br>
+                        <li><i class='bx bxs-checkbox-checked bx-flip-horizontal bx-burst'
+                                style='color:#0de616'></i>&nbsp; Access to your Network Graph.<span
+                                style="font-size:small;">(Enables generation of Network Graph for YOU ONLY.)</span></li><br>
+                        <li><i class='bx bxs-x-square bx-flip-horizontal bx-burst' style='color:#ec0c3a'></i>&nbsp; Get
+                            a verfied patch on your profile.</li><br>
+                        <li><i class='bx bxs-x-square bx-flip-horizontal bx-burst' style='color:#ec0c3a'></i>&nbsp; Can
+                            get a opportunity to work with us. <span style="font-size:small;">(We will go through your
+                                profile and approach to you on finding it utilitarian.)</li><br>
+                    </h5>
+                    <hr>
+                    <div class="btn btn-piro">
+                        <button type="button" class="btn" data-toggle="modal" data-target="#exampleModalbooster">
+                            PURCHASE
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="exampleModalclassic" tabindex="-1" aria-labelledby="exampleModalLabelclassic"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabelclassic">👍🏻Get this plan.</h5>
+
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <p>You will access the benefits of Classic plan after accepting this pack. You surely want to get
+                        it?</p>
+                    <form action="" method="post" id="piro-form-classic"> {% csrf_token %}
+                        <input type="hidden" value="{{userprofile.user.username}}" name="pirouser" id="pirouser">
+                        <input type="hidden" value="71" name="type" id="typeclassic">
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Get it!</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="exampleModalpremium" tabindex="-1" aria-labelledby="exampleModalLabelpremium"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabelpremium">👍🏻Get this plan.</h5>
+
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <p>You will access the benefits of Premium plan after accepting this pack. You surely want to get
+                        it?</p>
+                    <form action="" method="post" id="piro-form-premium"> {% csrf_token %}
+                        <input type="hidden" value="{{userprofile.user.username}}" name="pirouser" id="pirouser">
+                        <input type="hidden" value="73" name="type" id="typepremium">
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Get it!</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="exampleModalbooster" tabindex="-1" aria-labelledby="exampleModalLabelbooster"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabelbooster">👍🏻Get this plan.</h5>
+
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <p>You will access the benefits of Booster plan after accepting this pack. You surely want to get
+                        it?</p>
+                    <form action="" method="post" id="piro-form-booster"> {% csrf_token %}
+                        <input type="hidden" value="{{userprofile.user.username}}" name="pirouser" id="pirouser">
+                        <input type="hidden" value="72" name="type" id="typebooster">
+
+                        <div class="modal-footer">
+                            <button type="submit" class="btn btn-success">Get it!</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br><br><code
+        class="m-3">NOTE : Any plan you choose, it will be activated from now onwards till the specified date. We will notify you before the expiry of your plan.</code>
+    <hr><br>
+    <div class="row">
+        <div>
+            <p>
+                <button class="btn btn-primary mx-4" type="button" data-toggle="collapse"
+                    data-target="#collapseWidthExampleaimatch" aria-expanded="false"
+                    aria-controls="collapseWidthExampleaimatch">
+                    Know about the AI Pre-match
+                </button>
+            </p>
+            <div style="min-height: 120px;">
+                <div class="collapse width mx-4 mb-1" id="collapseWidthExampleaimatch">
+                    <div class="card card-body" style="width: 320px;">
+                        <p>This facility enables you to match your profile data with any other user's profile
+                            (private/public). It result in compatibility of your relationship using the ML model**.</p>
+                        <p>Know before you make your first move.</p>
+                        <p style="font-size:small;">**This is an machine learning model so it results after examining
+                            various data sets which were fed to the learning algorithm.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div>
+            <p>
+                <button class="btn btn-primary ml-4" type="button" data-toggle="collapse"
+                    data-target="#collapseWidthExampleng" aria-expanded="false" aria-controls="collapseWidthExampleng">
+                    Know about the Network Graph
+                </button>
+            </p>
+            <div style="min-height: 120px;">
+                <div class="collapse width mx-4 mb-1" id="collapseWidthExampleng">
+                    <div class="card card-body" style="width: 320px;">
+                        <p>It makes a visual graph** of you, your followers, ones you following and their followers and
+                            following users (public/private) as well. </p>
+                        <p>Pictorical/Graphical representation are more informative and attractive.</p>
+                        <p style="font-size:small;">**This uses graph data structure for implementation. The size of the
+                            graph will be limited if it expands a lot.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div>
+            <p>
+                <button class="btn btn-primary ml-4" type="button" data-toggle="collapse"
+                    data-target="#collapseWidthExamplevp" aria-expanded="false" aria-controls="collapseWidthExamplevp">
+                    Know about the Verfied Patch.
+                </button>
+            </p>
+            <div style="min-height: 120px;">
+                <div class="collapse width mx-4 mb-1" id="collapseWidthExamplevp">
+                    <div class="card card-body" style="width: 320px;">
+                        <p>A verified tick mark is displayed on your username that outshines your profile.</p>
+                        <p>Being verified user makes you more prevalent among various users by displaying your profile
+                            in searches. Besides this users will get to see your posts** more frequently while scrolling
+                            through other posts. </p>
+                        <p style="font-size:small;">**Your posts will not be visible the user blocks you or decides to
+                            be not interested in your profile.</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+</div>
+
+
+
+{% endblock content %}
