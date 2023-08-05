@@ -18,6 +18,10 @@ from django.db.models import Q
 import os
 from django.core.mail import send_mail
 from django.conf import settings as conf_settings
+import imghdr
+import cv2
+import tensorflow as tf
+import numpy as np
 # Create your views here.
 @login_required
 def index(request):
@@ -229,7 +233,6 @@ def register(request):
 
         # return redirect('register')
         if username!='' and password!='' and check18 and password==password2 and email!='':
-            
             if User.objects.filter(email=email).exists():
                 messages.warning(request,'Email already in use')
                 return redirect('register')
@@ -635,7 +638,7 @@ def notifications(user):
     return notifics
 
 @login_required
-def notifdelete(request):
+def notifdeletefollow(request):
     # return HttpResponse('follow request delete notifications')
     if request.method=="POST":
         notifsno=request.POST.get('notifsno')
@@ -646,6 +649,17 @@ def notifdelete(request):
         # print(followreq)
         notif.delete()
         followreq.delete()
+    return redirect('/')
+
+@login_required
+def notifdeletedm(request):
+    # return HttpResponse('dm delete notification')
+    if request.method=='POST':
+        notifsno=request.POST.get('notifsno')
+        # print(notifsno)
+        notif=Notification.objects.get(sno=notifsno)
+        # print(notif)
+        notif.delete()
     return redirect('/')
 
 @login_required
@@ -674,10 +688,45 @@ def networkgraphcreate(request,sno):
         return redirect('/')
     notifics=notifications(request.user)
     notidict={'notifics':notifics}
-    
     context={'userprofile':userprofile,'sno':sno,'graph':graph}|notidict
     return render(request,'netgraphdisplay.html',context)
     # plt.show()
     
-    
-    
+@login_required
+def caption(request):
+    # return HttpResponse('create caption')  
+    userprofile=Profile.objects.get(user=request.user)
+    notifics=notifications(request.user)
+    notidict={'notifics':notifics}
+    if request.method == 'POST':
+        inpimage=request.FILES.get('inpimage')
+        conlength=request.POST.get('conlength')
+        print(inpimage,conlength,type(inpimage),imghdr.what(inpimage))
+        extention=imghdr.what(inpimage)
+        if extention=='jpeg' or extention=='png' or extention=='jpg':
+            IMAGE_SIZE = (150, 150)
+            class_names = ['mountain', 'street', 'glacier', 'buildings', 'sea', 'forest']
+            newmodel=tf.keras.models.load_model(os.path.join('mlmodels','imageclassification.h5'))
+            print(newmodel)
+            print(inpimage,type(inpimage),conlength,type(conlength))
+            if os.path.exists(f'media/caption_images/inpimage'):
+                os.remove(f'media/caption_images/inpimage')
+            
+            plt.title("input Image")
+            plt.imshow(inpimage)
+            plt.show()
+            inpimage = cv2.imread(inpimage)
+            inpimage=cv2.cvtColor(inpimage,cv2.COLOR_BGR2RGB)
+            inpimage=cv2.resize(inpimage,IMAGE_SIZE)
+            testpredictions=newmodel.predict(np.expand_dims(inpimage/255,0))
+            print('input image prediction',testpredictions)
+            testpredictionlables=np.argmax(testpredictions,axis=1)
+            print(testpredictionlables)
+            resultclass=class_names[testpredictionlables[0]]
+            print(resultclass)
+            return redirect('caption')
+        else:
+            messages.warning(request,'The extension of uploaded file does not match the requirements.')
+            return redirect('caption')
+    context={'userprofile':userprofile}|notidict
+    return render(request,'caption.html',context)

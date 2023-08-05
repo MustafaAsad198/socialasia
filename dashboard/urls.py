@@ -23,9 +23,11 @@ urlpatterns = [
     path('dmdelete',views.dmdelete,name='dmdelete'),
     path('piro',views.piro,name='piro'),
     path('pirocreate',views.pirocreate,name='pirocreate'),
-    path('notifdelete',views.notifdelete,name='notifdelete'),
+    path('notifdeletefollow',views.notifdeletefollow,name='notifdeletefollow'),
+    path('notifdeletedm',views.notifdeletedm,name='notifdeletedm'),
     path('notifaccept',views.notifaccept,name='notifaccept'),
     path('networkgraphcreate/<int:sno>',views.networkgraphcreate,name='networkgraphcreate'),
+    path('caption',views.caption,name='caption'),
     
 
 ]

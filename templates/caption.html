@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load extras %}
+{% load crispy_forms_tags %}
+{% block title %}Socialasia - Caption Page{% endblock title %}
+{% comment %} {% load static %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}"> {% endcomment %}
+{% block content %}
+
+<div class="container home-content py-1">
+	{% for message in messages %}
+	<div class="alert alert-{{ message.tags }} alert-dismissible mb-2 fade show" role="alert">
+		<strong>{{message}}</strong>
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	{% endfor %}
+	<div class="card my-4 shadow-sm p-2">
+		<div class="card-header">
+			<h2>AI Caption Generator</h2>
+		</div>
+		<div class="card-body">
+			<form action="" method="post" class="m-2 p-4" enctype="multipart/form-data"> {% csrf_token %}
+				<div class="custom-file mb-4">
+					<input type="file" class="custom-file-input" id="customFile" name="inpimage">
+					<label class="custom-file-label" for="customFile">Choose a Photo &nbsp; (.jpg or .png type only)</label>
+				</div>
+				<div class="input-group mb-3">
+					<div class="input-group-prepend">
+						<label class="input-group-text" for="inputGroupSelect01">Options</label>
+					</div>
+					<select class="custom-select" id="inputGroupSelect01" name="conlength">
+						<option selected value="long">Long</option>
+						<option value="meduim">Medium</option>
+						<option value="short">Short</option>
+					</select>
+				</div>
+				<br>
+				<button type="submit" class="btn btn-dark">Get your caption</button>
+			</form>
+		</div>
+	</div>
+
+
+</div>
+
+
+{% endblock content %}

@@ -176,8 +176,6 @@
                     <hr>
                     {% endfor %}
                     {% endif %}
-
-
                 </div>
             </div>
             {% if pirouser != None %}
@@ -193,7 +191,6 @@
                 </div>
             </div>
             {% if pirouser.type == 73 %}
-            
             <div class="card my-4 shadow-sm">
                 <div class="card-header">
                     Network Graph -
@@ -204,7 +201,16 @@
                         <button type="submit" class="btn btn-dark">View the Network Graph</button>
                     </form>
                 </div>
-                
+            </div>
+            <div class="card my-4 shadow-sm">
+                <div class="card-header"><i class='bx bxs-captions' style='color:#070707;font-size:xx-large' ></i> 
+                    Get a Caption -
+                </div>
+                <div class="card-body">
+                    <div class="m-2">
+                        <a href="{% url 'caption' %}">Discover Caption Generator<i class='bx bx-link-external' style='color:#070707;font-size:x-large'  ></i></a>
+                    </div>
+                </div> 
             </div>
             {% elif pirouser.type == 72 %}
             <div class="card my-4 shadow-sm">
@@ -216,8 +222,7 @@
                         {{ form2|crispy }}
                         <button type="submit" class="btn btn-dark">View the Network Graph</button>
                     </form>
-                </div>
-                
+                </div> 
             </div>
             {% endif %}
             {% else %}
@@ -225,7 +230,6 @@
                 <div class="card-header">
                     Become a <b>Piro</b> User -
                 </div>
-
                 <div class="card-body">
                     <a href="{% url 'piro' %}" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Proceed</a>
                     <span>Grab the benefits!</span>

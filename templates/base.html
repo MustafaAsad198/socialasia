@@ -282,7 +282,26 @@
             e.preventDefault();
             $.ajax({
                 type:'POST',
-            url:'{% url "notifdelete" %}',
+            url:'{% url "notifdeletefollow" %}',
+            data:
+            {
+                notifsno:delnotifid,
+            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                        },
+            success:function(){
+                $(notifdel).css({"display":"none"});
+                //alert('notif Deleted.');
+                            }
+                        })
+                });
+        
+        $(document).on('submit','.notif-del-form92',function(e){
+            delnotifid=this.id.toString();
+            notifdel='#notif92'+delnotifid
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+            url:'{% url "notifdeletedm" %}',
             data:
             {
                 notifsno:delnotifid,
@@ -315,7 +334,10 @@
                         })
                 });
 
-
+        $('#customFile').on('change',function(e){
+            filename=e.target.files[0].name;
+            $('.custom-file-label').html(filename);
+        });
 
 
 
