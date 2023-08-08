@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Profile ,Post,Like,Follow,Dm,Postcomment,Predictmatch,Piro,Notification,Networkgraph
+from .models import Profile ,Post,Like,Follow,Dm,Postcomment,Predictmatch,Piro,Notification,Networkgraph,Caption,Examplecaption
 class PostAdmin(admin.ModelAdmin):
     list_display=('id','user','image_tag','caption','time','likes')
 
@@ -11,6 +11,9 @@ class PiroAdmin(admin.ModelAdmin):
 
 class NotificationAdmin(admin.ModelAdmin):
     list_display=('ntype','timestamp','nfromuser','ntouser')
+
+class CaptionAdmin(admin.ModelAdmin):
+    list_display=('sno','inpimage','contentlength')
 # Register your models here.
 admin.site.register(Profile,ProfileAdmin)
 admin.site.register(Post,PostAdmin)
@@ -22,3 +25,5 @@ admin.site.register(Predictmatch)
 admin.site.register(Piro)
 admin.site.register(Notification,NotificationAdmin)
 admin.site.register(Networkgraph)
+admin.site.register(Caption,CaptionAdmin)
+admin.site.register(Examplecaption)

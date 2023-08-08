@@ -22,22 +22,9 @@
 		</div>
 		<div class="card-body">
 			<form action="" method="post" class="m-2 p-4" enctype="multipart/form-data"> {% csrf_token %}
-				<div class="custom-file mb-4">
-					<input type="file" class="custom-file-input" id="customFile" name="inpimage">
-					<label class="custom-file-label" for="customFile">Choose a Photo &nbsp; (.jpg or .png type only)</label>
-				</div>
-				<div class="input-group mb-3">
-					<div class="input-group-prepend">
-						<label class="input-group-text" for="inputGroupSelect01">Options</label>
-					</div>
-					<select class="custom-select" id="inputGroupSelect01" name="conlength">
-						<option selected value="long">Long</option>
-						<option value="meduim">Medium</option>
-						<option value="short">Short</option>
-					</select>
-				</div>
-				<br>
-				<button type="submit" class="btn btn-dark">Get your caption</button>
+				<i>Choose a Photo &nbsp; (.jpg or .png type only)</i>
+				{{ form|crispy }}
+				<button type="submit" class="btn btn-dark">Get your Caption!</button>
 			</form>
 		</div>
 	</div>

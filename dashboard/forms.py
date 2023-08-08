@@ -1,5 +1,5 @@
 from django import forms
-from .models import Profile,Predictmatch,Networkgraph
+from .models import Profile,Predictmatch,Networkgraph,Caption
 
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
@@ -20,3 +20,8 @@ class NetworkGraphBoosterForm(forms.ModelForm):
     class Meta:
         model=Networkgraph
         fields=['level']
+
+class CaptionForm(forms.ModelForm):
+    class Meta:
+        model=Caption
+        fields='__all__'

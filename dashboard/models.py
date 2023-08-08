@@ -38,7 +38,7 @@ GENDER=(
     (0,'Female'),
     (1,'Male'),
 )
-TYPE=(
+PTYPE=(
     (71,'Classic'),
     (72,'Booster'),
     (73,'Premium'),
@@ -47,6 +47,19 @@ NTYPE=(
     (90,'None'),
     (91,'Follow'),
     (92,'Message'),
+)
+LTYPE=(
+    (11,'Long'),
+    (12,'Medium'),
+    (13,'Short'),
+)
+OTYPE=(
+    (61,'Mountain'),
+    (62,'Street'),
+    (63,'Glacier'),
+    (64,'Building'),
+    (65,'Sea'),
+    (66,'Forest'),
 )
 class Profile(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE)
@@ -144,7 +157,7 @@ class Predictmatch(models.Model):
 class Piro(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE)
     since=models.DateField(auto_now_add=True)
-    type=models.PositiveIntegerField(blank=True,choices=TYPE)
+    type=models.PositiveIntegerField(blank=True,choices=PTYPE)
 
     def __str__(self):
         return f'{self.user} is a {self.type} user since {self.since}'
@@ -169,3 +182,20 @@ class Networkgraph(models.Model):
 
     def __str__(self) -> str:
         return f'graph {self.sno} for {self.src}'
+
+class Caption(models.Model):
+    sno=models.AutoField(primary_key=True)
+    inpimage=models.ImageField(upload_to='caption_images')
+    contentlength=models.PositiveIntegerField(choices=LTYPE,default=11)
+
+    def __str__(self) -> str:
+        return f'{self.sno} - {self.inpimage} has length {self.contentlength}'
+
+class Examplecaption(models.Model):
+    sno=models.AutoField(primary_key=True)
+    text=models.TextField(blank=True)
+    contentlength=models.PositiveIntegerField(choices=LTYPE,default=11)
+    obj=models.PositiveIntegerField(choices=OTYPE,null=True,blank=True)
+
+    def __str__(self) -> str:
+        return f'{self.obj} - {self.text} has length {self.contentlength}'
