@@ -9,6 +9,7 @@ import uuid
 from django.db.models import CheckConstraint,Q,F
 from django.utils.safestring import mark_safe
 from django.core.validators import MaxValueValidator,MinValueValidator
+from django import forms
 # Create your models here.
 SPORT=(
     (50,'None'),
@@ -186,16 +187,16 @@ class Networkgraph(models.Model):
 class Caption(models.Model):
     sno=models.AutoField(primary_key=True)
     inpimage=models.ImageField(upload_to='caption_images')
-    contentlength=models.PositiveIntegerField(choices=LTYPE,default=11)
 
     def __str__(self) -> str:
-        return f'{self.sno} - {self.inpimage} has length {self.contentlength}'
+        return f'{self.sno} - {self.inpimage}'
 
 class Examplecaption(models.Model):
     sno=models.AutoField(primary_key=True)
-    text=models.TextField(blank=True)
-    contentlength=models.PositiveIntegerField(choices=LTYPE,default=11)
-    obj=models.PositiveIntegerField(choices=OTYPE,null=True,blank=True)
+    user=models.ForeignKey(User,on_delete=models.CASCADE,blank=True,null=True)
+    text=models.TextField(blank=False)
+    contentlength=models.PositiveIntegerField(choices=LTYPE)
+    obj=models.PositiveIntegerField(choices=OTYPE)
 
     def __str__(self) -> str:
-        return f'{self.obj} - {self.text} has length {self.contentlength}'
+        return f'{self.obj} - {self.text} has length {self.contentlength} by {self.user}'

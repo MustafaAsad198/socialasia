@@ -16,6 +16,7 @@
 		</button>
 	</div>
 	{% endfor %}
+	{% if resultclass == None %}
 	<div class="card my-4 shadow-sm p-2">
 		<div class="card-header">
 			<h2>AI Caption Generator</h2>
@@ -28,9 +29,89 @@
 			</form>
 		</div>
 	</div>
+	{% else %}
+	<h2>Resultant Captions</h2>
+	<h5>Below are few captions of displayed those go with the image you wanna upload!</h5>
+	<h6>You can copy any one of them and paste or edit it as per your preference.</h6>
+	<div class="resultbox my-4 p-2">
+		<ul class="nav nav-tabs" id="myTab" role="tablist">
+			<li class="nav-item" role="presentation">
+				<button class="nav-link active" id="home-tab" data-toggle="tab" data-target="#home" type="button"
+					role="tab" aria-controls="home" aria-selected="true">Short</button>
+			</li>
+			<li class="nav-item" role="presentation">
+				<button class="nav-link" id="profile-tab" data-toggle="tab" data-target="#profile" type="button"
+					role="tab" aria-controls="profile" aria-selected="false">Medium</button>
+			</li>
+			<li class="nav-item" role="presentation">
+				<button class="nav-link" id="contact-tab" data-toggle="tab" data-target="#contact" type="button"
+					role="tab" aria-controls="contact" aria-selected="false">Long</button>
+			</li>
+		</ul>
+		<div class="tab-content" id="myTabContent">
+			<div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+				<div class="row row-cols-1 row-cols-md-3 my-2 p-2">
+					{% for rescap in resultcaptions %}
+					{% if rescap.contentlength == 13 %}
+					<div class="col mb-4">
+						<div class="card" style="width: 18rem;">
+							<div class="card-body">
+								<h6 class="card-subtitle mb-2 text-muted">Caption by - {{rescap.user}}</h6>
+								<p class="card-text" id="caption{{rescap.sno}}">{{rescap.text}}</p>
+								<button type="button" id="copybtn{{rescap.sno}}" class="btn btn-dark btn-sm copybtn">Copy</button>
+							</div>
+						</div>
+					</div>
+					{% endif %}
+					{% endfor %}
+				</div>
+			</div>
+			<div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+				<div class="row row-cols-1 row-cols-md-3 my-2 p-2">
+					{% for rescap in resultcaptions %}
+					{% if rescap.contentlength == 12 %}
+					<div class="col mb-4">
+						<div class="card" style="width: 18rem;">
+							<div class="card-body">
+								<h6 class="card-subtitle mb-2 text-muted">Caption by - {{rescap.user}}</h6>
+								<p class="card-text" id="caption{{rescap.sno}}">{{rescap.text}}</p>
+								<button type="button" id="copybtn{{rescap.sno}}" class="btn btn-dark btn-sm copybtn">Copy</button>
+							</div>
+						</div>
+					</div>
+					{% endif %}
+					{% endfor %}
+				</div>
+			</div>
+			<div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+				<div class="row row-cols-1 row-cols-md-3 my-2 p-2">
+					{% for rescap in resultcaptions %}
+					{% if rescap.contentlength == 11 %}
+					<div class="col mb-4">
+						<div class="card" style="width: 18rem;">
+							<div class="card-body">
+								<h6 class="card-subtitle mb-2 text-muted">Caption by - {{rescap.user}}</h6>
+								<p class="card-text" id="caption{{rescap.sno}}">{{rescap.text}}</p>
+								<button type="button" id="copybtn{{rescap.sno}}" class="btn btn-dark btn-sm copybtn">Copy</button>
+							</div>
+						</div>
+					</div>
+					{% endif %}
+					{% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+	{% endif %}
 
 
 </div>
 
 
 {% endblock content %}
+{% block script %}
+$('.copybtn').on('click', function(e){
+	copyid=this.id.toString().slice(7);
+	navigator.clipboard.writeText(document.getElementById('caption'+copyid).innerHTML);
+});
+{% endblock script %}

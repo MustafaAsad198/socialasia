@@ -13,7 +13,11 @@ class NotificationAdmin(admin.ModelAdmin):
     list_display=('ntype','timestamp','nfromuser','ntouser')
 
 class CaptionAdmin(admin.ModelAdmin):
-    list_display=('sno','inpimage','contentlength')
+    list_display=('sno','inpimage')
+
+class ExamplecaptionAdmin(admin.ModelAdmin):
+    list_display=('sno','user','text','contentlength','obj')
+
 # Register your models here.
 admin.site.register(Profile,ProfileAdmin)
 admin.site.register(Post,PostAdmin)
@@ -26,4 +30,4 @@ admin.site.register(Piro)
 admin.site.register(Notification,NotificationAdmin)
 admin.site.register(Networkgraph)
 admin.site.register(Caption,CaptionAdmin)
-admin.site.register(Examplecaption)
+admin.site.register(Examplecaption,ExamplecaptionAdmin)

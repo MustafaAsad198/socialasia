@@ -178,6 +178,18 @@
                     {% endif %}
                 </div>
             </div>
+            <div class="card my-4 shadow-sm" id="otherusers">
+                <div class="card-header">
+                    Create and Add a caption - 
+                </div>
+                <div class="card-body">
+                    <form action="" method="post"> {% csrf_token %}
+                        {{ form3|crispy }}
+                        <button type="submit" class="btn btn-dark">Add this caption!</button>
+                    </form>
+                </div>
+                
+            </div>
             {% if pirouser != None %}
             <div class="card my-4 shadow-sm" id="pirou">
                 <div class="card-header">
@@ -186,7 +198,7 @@
                 <div class="card-body">
                     <form action="" method="post"> {% csrf_token %}
                         {{ form|crispy }}
-                        <button type="submit" class="btn btn-dark">Submit</button>
+                        <button type="submit" class="btn btn-dark">Match!</button>
                     </form>
                 </div>
             </div>
@@ -198,20 +210,11 @@
                 <div class="card-body">
                     <form action="" method="post" class="m-2 p-4"> {% csrf_token %}
                         {{ form1|crispy }}
-                        <button type="submit" class="btn btn-dark">View the Network Graph</button>
+                        <button type="submit" class="btn btn-dark">View the Network Graph!</button>
                     </form>
                 </div>
             </div>
-            <div class="card my-4 shadow-sm">
-                <div class="card-header"><i class='bx bxs-captions' style='color:#070707;font-size:xx-large' ></i> 
-                    Get a Caption -
-                </div>
-                <div class="card-body">
-                    <div class="m-2">
-                        <a href="{% url 'caption' %}">Discover Caption Generator<i class='bx bx-link-external' style='color:#070707;font-size:x-large'  ></i></a>
-                    </div>
-                </div> 
-            </div>
+            
             {% elif pirouser.type == 72 %}
             <div class="card my-4 shadow-sm">
                 <div class="card-header">
@@ -220,7 +223,7 @@
                 <div class="card-body">
                     <form action="" method="post" class="m-2 p-4"> {% csrf_token %}
                         {{ form2|crispy }}
-                        <button type="submit" class="btn btn-dark">View the Network Graph</button>
+                        <button type="submit" class="btn btn-dark">View the Network Graph!</button>
                     </form>
                 </div> 
             </div>

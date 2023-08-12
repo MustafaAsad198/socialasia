@@ -1,5 +1,5 @@
 from django import forms
-from .models import Profile,Predictmatch,Networkgraph,Caption
+from .models import Profile,Predictmatch,Networkgraph,Caption,Examplecaption
 
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
@@ -25,3 +25,11 @@ class CaptionForm(forms.ModelForm):
     class Meta:
         model=Caption
         fields='__all__'
+
+class ExampleCaptionsForm(forms.ModelForm):
+    class Meta:
+        model=Examplecaption
+        fields=['text', 'contentlength', 'obj']
+        widgets={
+            'summary':forms.Textarea(attrs={'rows':2})
+        }

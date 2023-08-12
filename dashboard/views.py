@@ -2,13 +2,13 @@ from asyncore import read
 from django.shortcuts import render,redirect,HttpResponse
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import Profile ,Post,Like,Follow,Dm,Postcomment,Predictmatch,Piro,Notification,Networkgraph,Caption
+from .models import Profile ,Post,Like,Follow,Dm,Postcomment,Predictmatch,Piro,Notification,Networkgraph,Caption,Examplecaption
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
 from collections import deque,defaultdict
 from itertools import chain
 import random
-from .forms import ProfileUpdateForm,PredictDataFrom,NetworkGraphPremiumForm,NetworkGraphBoosterForm,CaptionForm
+from .forms import ProfileUpdateForm,PredictDataFrom,NetworkGraphPremiumForm,NetworkGraphBoosterForm,CaptionForm,ExampleCaptionsForm
 from sklearn.tree import DecisionTreeClassifier
 import joblib
 from dashboard.templatetags import extras
@@ -75,7 +75,21 @@ def index(request):
         pirouser=None
     notifics=notifications(request.user)
     notidict={'notifics':notifics}
-
+    formd={}
+    if request.method == 'POST':
+        form3=ExampleCaptionsForm(request.POST)
+        if form3.is_valid():
+            text=form3.data.get('text')
+            contentlength=form3.data.get('contentlength')
+            obj=form3.data.get('obj')
+            # print(text,contentlength,obj)
+            egcaption=Examplecaption.objects.create(text=text,contentlength=contentlength,obj=obj,user=request.user)
+            egcaption.save()
+            messages.info(request,'Your caption has been added. It will be displayed to users when they access AI Caption Generator.')
+            return redirect('dashboard-index')
+    else:
+        form3=ExampleCaptionsForm()
+    formd['form3']=form3
     if request.method=='POST':
         form=PredictDataFrom(request.POST)
         if form.is_valid():
@@ -103,7 +117,6 @@ def index(request):
             return redirect(f'/predict/{user2.username}')
     else:
         form=PredictDataFrom()
-    formd={}
     if Piro.objects.filter(user=user,type=73).exists():
         src=None
         if request.method=='POST':
@@ -697,10 +710,10 @@ def caption(request):
     userprofile=Profile.objects.get(user=request.user)
     notifics=notifications(request.user)
     notidict={'notifics':notifics}
+    resultclass=None
     if request.method == 'POST':
         form=CaptionForm(request.POST,request.FILES)
         if form.is_valid():
-            contentlength=form.data.get('contentlength')
             Caption.objects.all().delete()
             for f in os.listdir('media/caption_images/'):
                 os.remove(f'media/caption_images/{f}')
@@ -708,18 +721,19 @@ def caption(request):
             inpimagepath=os.path.join('media/caption_images',os.listdir('media/caption_images')[0])
             newmodel=tf.keras.models.load_model(os.path.join('mlmodel','imageclassification.h5'))
             inpimage=cv2.imread(inpimagepath)
-            class_names = ['mountain', 'street', 'glacier', 'buildings', 'sea', 'forest']
+            class_names = ['mountain', 'street', 'glacier', 'building', 'sea', 'forest']
+            objidmap={'mountain': 61, 'street': 62, 'glacier': 63, 'building': 64, 'sea': 65, 'forest': 66}
             IMAGE_SIZE = (150, 150)
             inpimage=cv2.cvtColor(inpimage,cv2.COLOR_BGR2RGB)
             inpimage=cv2.resize(inpimage,IMAGE_SIZE)
             predictions=newmodel.predict(np.expand_dims(inpimage/255,0))
             predictionlables=np.argmax(predictions,axis=1)
-            resultclass=class_names[predictionlables[0]]
-            # print(resultclass)
-            return redirect('caption')
-            
+            resultclass=objidmap[class_names[predictionlables[0]]]
+            resultcaptions=Examplecaption.objects.filter(obj=resultclass)
+            # print(resultclass,resultcaptions)
+            context={'userprofile':userprofile,'resultclass':resultclass,'resultcaptions':resultcaptions}|notidict
+            return render(request,'caption.html',context)
     else:
-        form=CaptionForm()
-        
-    context={'userprofile':userprofile,'form':form}|notidict
+        form=CaptionForm() 
+    context={'userprofile':userprofile,'form':form,'resultclass':resultclass}|notidict
     return render(request,'caption.html',context)
