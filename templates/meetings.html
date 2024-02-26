@@ -1,0 +1,275 @@
+{% extends 'base.html' %}
+{% block title %}Socialasia - {{userprofile.user.username}}'s Meetings Page {% endblock title %}
+{% load static %}
+{% load humanize %}
+{% load extras %}
+{% load crispy_forms_tags %}
+<link rel="stylesheet" href="{% static 'css/styles.css' %}">
+
+{% block content %}
+<div class="container home-content">
+	{% for message in messages %}
+	<div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+		<strong>{{message}}</strong>
+		<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+			<span aria-hidden="true">&times;</span>
+		</button>
+	</div>
+	{% endfor %}
+	<h5>Showing {{user_meetings|length}} meeting{{user_meetings|length|pluralize}} in your meeting box.</h5>
+	{% if current_meeting != '0' %}
+	<div class="jumbotron p-2">
+		<p>This is to notify you that you are logged in to an existing meeting, <strong>{{current_meeting}}</strong> due to which you cannot access other meetings. From here you can rejoin the meeting or log out from it in order to join other meetings</p>
+		<a class="btn btn-sm btn-primary mr-2" href="{% url 'meeting' current_meeting.id %}" role="button">Rejoin Meeting »</a>
+		<a class="btn btn-sm btn-outline-primary ml-1" href="{% url 'meetinglogout' %}" role="button">Logout from this Meeting »</a>
+	</div>
+	{% endif %}
+	<div class='float-right'><button type="button" class="btn" data-toggle="modal"
+			data-target="#exampleModaladdmeeting">
+			<i class='bx bxs-video-plus' style='color:#0f0e0e;font-size:xxx-large;'></i>
+		</button></div>
+	<div class="modal fade" id="exampleModaladdmeeting" tabindex="-1" aria-labelledby="exampleModalLabeladdmeeting"
+		aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabeladdmeeting">Meeting Details</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<form action="" method="post" enctype="multipart/form-data"> {% csrf_token %}
+					<div class="modal-body">
+						<input type="hidden" name="id" value="">
+						<div class="form-group">
+							<label for="title">Meeting Title</label>
+							<input type="text" class="form-control" id="title" aria-describedby="textHelp" name='title'
+								value='Untitled Meeting' required>
+						</div>
+						<div class="form-group">
+							<label for="description">Meeting Description</label>
+							<textarea class="form-control" id="description" placeholder='What is this meeting about?'
+								name='description'></textarea>
+						</div>
+						<div class="form-group">
+							<label for="scheduled_date">Meeting Date</label>
+							<input type="date" class="form-control" id="scheduled_date" aria-describedby="dateHelp"
+								name='scheduled_date' required>
+						</div>
+						<div class="form-group">
+							<label for="scheduled_time">Meeting Time</label>
+							<input type="time" class="form-control" id="scheduled_time" aria-describedby="dateHelp"
+								name='scheduled_time' required>
+						</div>
+						<h6>Participants</h6>
+						<p style='font-size:small;'>Add the authorised participants by putting a check ☑</p>
+						<div class="form-group ">
+							{% for u in users %}
+							<div class="col mb-4">
+								<div class="input-group-text">
+									<input type="checkbox" id="{{u.id}}" aria-label="Checkbox for following text input"
+										name="participants" class="form-check-input" value="{{u.id}}">
+									<label class="form-check-label" for="{{u.id}}">
+										{{u}}
+									</label>
+								</div>
+							</div>
+							{% endfor %}
+						</div>
+						<hr>
+						<div class="form-check">
+							<input class="form-check-input" type="checkbox" id="is_recurring" name='is_recurring'>
+							<label class="form-check-label" for="is_recurring" name='is_recurring'>
+								Is it is Recurring meeting?
+							</label>
+						</div>
+						<code style="font-size:small;">If this is a recurring meeting then please specify the interval as well. Don't keep it None.</code>
+						<div class="form-group">
+							<label for="exampleFormControlSelect1mi">Recurring interval</label>
+							<select class="form-control" id="exampleFormControlSelect1mi" name="recurring_type">
+								{% for r in RTYPE %}
+								<option value="{{r.0}}">{{r.1}}</option>
+								{% endfor %}
+							</select>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="submit" class="btn btn-dark">Create Meeting</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	<hr>
+	<div class="list-group my-2 p-2 col-md-8 offset-md-2">
+		{% for um in user_meetings %}
+		<div class="list-group-item list-group-item-action mb-1">
+			<div class="d-flex w-100 justify-content-between d-flex justify-content-between align-items-center">
+				<div>
+					<h5 class="mb-1"><a href="{% url 'meeting' um.id %}">
+							{{um.title}}</a>
+					</h5>
+					<h6>{{um.description}}</h6>by
+
+					<small><a href="{% url 'profile' um.host %}">{{um.host}}</a></small>
+					<div>
+						<strong>Participants:</strong>{% for p in um.participants.all %} <a href="{% url 'profile' p %}">{{p}}, </a> 
+						{% endfor %}
+					</div>
+				</div>
+				<span class="badge badge-primary badge-pill">{{um.scheduled_date}} - {{um.scheduled_time}}</span>
+				{% if um.host == userprofile.user %}
+				<div class="dropright">
+					<button class="btn btn-transparent dropdown-toggle" type="button" data-toggle="dropdown"
+						aria-expanded="false">More Actions </button>
+					<div class="dropdown-menu">
+						<button type="button" class="btn btn-transparent dropdown-item" data-toggle="modal"
+							data-target="#exampleModaleditmeeting"><i class='bx bxs-message-square-edit' style='color:#151313'  ></i>
+							Modify Meeting
+						</button>
+						<button type="button" class="btn btn-transparent dropdown-item" data-toggle="modal"
+							data-target="#exampleModaldeletemeeting" style="color:red;"><i class='bx bxs-message-square-x' style='color:#f80202'  ></i>
+							Delete Meeting
+						</button>
+					</div>
+				</div>
+				{% endif %}
+			</div>
+			<p class="mb-1"></p>
+		</div>
+		<div class="modal fade" id="exampleModaleditmeeting" tabindex="-1"
+			aria-labelledby="exampleModalLabeleditmeeting" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabeleditmeeting">Update Meeting Details</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<form action="" method="post" enctype="multipart/form-data"> {% csrf_token %}
+						<div class="modal-body">
+							<input type="hidden" name="id" value="{{um.id}}">
+							<div class="form-group">
+								<label for="title">Meeting Title</label>
+								<input type="text" class="form-control" id="title" aria-describedby="textHelp"
+									name='title' value="{{um.title}}" required>
+							</div>
+							<div class="form-group">
+								<label for="description">Meeting Description</label>
+								<textarea class="form-control" id="description"
+									 name='description'>{{um.description}}</textarea>
+							</div>
+							<div class="form-group">
+								<label for="scheduled_date">Meeting Date</label>
+								<input type="date" class="form-control" id="scheduled_date" aria-describedby="dateHelp"
+									name='scheduled_date' value="{{um.scheduled_date|get_date}}" required>
+							</div>
+							<div class="form-group">
+								<label for="scheduled_time">Meeting Time</label>
+								<input type="time" class="form-control" id="scheduled_time" aria-describedby="dateHelp"
+									name='scheduled_time' value="{{um.scheduled_time|get_24_hours_time}}" required>
+							</div>
+							<h6>Participants</h6>
+							<p style='font-size:small;'>Edit the authorised participants by putting a check ☑
+							</p>
+							<div class="form-group ">
+								{% with um.participants.all as auth_participants %}
+								{% for u in users %}
+								{% if u in auth_participants %}
+								<div class="col mb-4">
+									<div class="input-group-text">
+										<input checked type="checkbox" id="{{u.id}}"
+											aria-label="Checkbox for following text input" name="participants"
+											class="form-check-input" value="{{u.id}}">
+										<label class="form-check-label" for="{{u.id}}">
+											{{u}}
+										</label>
+									</div>
+								</div>
+								{% else %}
+								<div class="col mb-4">
+									<div class="input-group-text">
+										<input type="checkbox" id="{{u.id}}"
+											aria-label="Checkbox for following text input" name="participants"
+											class="form-check-input" value="{{u.id}}">
+										<label class="form-check-label" for="{{u.id}}">
+											{{u}}
+										</label>
+									</div>
+								</div>
+								{% endif %}
+								{% endfor %}
+								{% endwith %}
+							</div>
+							<hr>
+							{% if um.isrecurring %}
+							<div class="form-check">
+								<input checked class="form-check-input" type="checkbox" id="is_recurring" name='is_recurring'>
+								<label class="form-check-label" for="is_recurring" name='is_recurring'>
+									Is it is Recurring meeting?
+								</label>
+							</div>
+							{% else %}
+							<div class="form-check">
+								<input checked class="form-check-input" type="checkbox" id="is_recurring" name='is_recurring'>
+								<label class="form-check-label" for="is_recurring" name='is_recurring'>
+									Is it is Recurring meeting?
+								</label>
+							</div>
+							{% endif %}
+							<code style="font-size:small;">If this is a recurring meeting then please specify the interval as well. Don't keep it None.</code>
+							<div class="form-group">
+								<label for="exampleFormControlSelect1mi">Recurring interval</label>
+								<select class="form-control" id="exampleFormControlSelect1mi" name="recurring_type">
+									{% for r in RTYPE %}
+									{% if um.recurring_type == r.0 %}
+									<option value="{{r.0}}" selected>{{r.1}}</option>
+									{% else %}
+									<option value="{{r.0}}">{{r.1}}</option>
+									{% endif %}
+									{% endfor %}
+								</select>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							<button type="submit" class="btn btn-dark">Update Meeting</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="modal fade" id="exampleModaldeletemeeting" tabindex="-1"
+			aria-labelledby="exampleModalLabeldeletemeeting" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="exampleModalLabeldeletemeeting">Delete Meeting?</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<form action="" method="post" enctype="multipart/form-data"> {% csrf_token %}
+						<div class="modal-body">
+							<input type="hidden" name="id" value="DEL-{{um.id}}">
+								You surely want to delete this meeting, {{um.title}}?
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+							<button type="submit" class="btn btn-danger">Delete Meeting</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+
+
+
+</div>
+
+
+{% endblock content %}

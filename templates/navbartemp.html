@@ -64,23 +64,34 @@
 									<p>This AI caption generator is gonna help you with that, follow the link given 👆🏻</p>
 								</div> 
 							</div>
+							{% else %}
+							<div class="card my-4 shadow-sm" id="pirou">
+								<div class="card-header">
+									Become a <b>Piro</b> User to enjoy this feature-
+								</div>
+								<div class="card-body">
+									<a href="{% url 'piro' %}" class="btn btn-primary btn-lg active" role="button" aria-pressed="true">Proceed</a>
+									<span>Grab this benefit!</span>
+								</div>
+							</div>
 							{% endif %}
 						</div>
 					</div>
 				</li>
-
 				<li class="nav-item">
 					<button type="button" class="btn" data-toggle="modal" data-target="#exampleModalnotif">
 						<i class='bx bxs-bell-ring bell' style='color:#efecec'></i>
 					</button>
-
 				</li>
-
-				<li class="nav-item">
-					<a class="nav-link" href="{% url 'dms' %}"><i class='bx bxs-message message'
-							style='color:#f3efef'></i></a>
-				</li>
-
+				<li class="nav-item dropdown">
+					<a class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+						<i class='bx bxs-conversation message' style='color:#f3efef'></i>
+					</a>
+					<div class="dropdown-menu">
+					  <a class="dropdown-item" href="{% url "dms" %}"><i class='bx bxs-user' ></i>&nbsp;Your DMs</a>
+					  <a class="dropdown-item" href="{% url "hubs" %}"><i class='bx bxs-group' ></i>&nbsp;Your Hubs</a>
+					</div>
+				  </li>
 				<li class="nav-item dropdown mr-5">
 					<a class="nav-link dropdown-toggle user-profile-icon mr-5" href="#" role="button"
 						data-toggle="dropdown" aria-expanded="false">
@@ -147,7 +158,6 @@
 					{% elif noti.ntype == 92 %}
 					<div class="row p-1 justify-content-between" id="notif92{{noti.sno}}">
 						<div class="pl-2">
-
 							<strong><a
 									href="/profile/{{noti.nfromuser.username}}"><span>@{{noti.nfromuser.username}}</span></a></strong>
 							texted you.
@@ -156,14 +166,74 @@
 							<div>
 								<a href="/dms/{{noti.nfromuser.username}}"><button type="submit"
 										class="btn btn-primary btn-sm ml-2 noti-gotodm"> Go to Dms</button></a>
-
 							</div>
 							<div>
-								<form action="" class="notif-del-form92" method="post" id="{{noti.sno}}"> {% csrf_token
-									%}
+								<form action="" class="notif-del-form92" method="post" id="{{noti.sno}}"> {% csrf_token %}
 									<div id="{{noti.sno}}"></div>
 									<input type="hidden" name="notifsno" id="{{noti.sno}}" value="{{noti.sno}}"
 										class="del92">
+									<button type="submit" class="btn btn-danger btn-sm ml-2"> Mark as Read</button>
+								</form>
+							</div>
+						</div>
+					</div>
+					{% elif noti.ntype == 93 %}
+					<div class="row p-1 justify-content-between" id="notif93{{noti.sno}}">
+						<div class="pl-2">
+							<strong><a
+									href="/profile/{{noti.nfromuser.username}}"><span>@{{noti.nfromuser.username}}</span></a></strong>
+							texted in a Hub, {{noti.tohub.name}}.
+						</div>
+						<div class="row px-1 mx-1">
+							<div>
+								<a href="/hubs/{{noti.tohub.sno}}"><button type="submit"
+										class="btn btn-primary btn-sm ml-2 noti-gotohub"> Go to Hub</button></a>
+							</div>
+							<div>
+								<form action="" class="notif-del-form93" method="post" id="{{noti.sno}}"> {% csrf_token %}
+									<div id="{{noti.sno}}"></div>
+									<input type="hidden" name="notifsno" id="{{noti.sno}}" value="{{noti.sno}}"
+										class="del93">
+									<button type="submit" class="btn btn-danger btn-sm ml-2"> Mark as Read</button>
+								</form>
+							</div>
+						</div>
+					</div>
+					{% elif noti.ntype == 94 %}
+					<div class="row p-1 justify-content-between" id="notif94{{noti.sno}}">
+						<div class="pl-2">
+							You are welcomed in a Hub, <strong>{{noti.tohub.name}}</strong> .
+						</div>
+						<div class="row px-1 mx-1">
+							<div>
+								<a href="/hubs/{{noti.tohub.sno}}"><button type="submit"
+										class="btn btn-primary btn-sm ml-2 noti-gotohub"> Go to Hub</button></a>
+							</div>
+							<div>
+								<form action="" class="notif-del-form94" method="post" id="{{noti.sno}}"> {% csrf_token %}
+									<div id="{{noti.sno}}"></div>
+									<input type="hidden" name="notifsno" id="{{noti.sno}}" value="{{noti.sno}}"
+										class="del94">
+									<button type="submit" class="btn btn-danger btn-sm ml-2"> Mark as Read</button>
+								</form>
+							</div>
+						</div>
+					</div>
+					{% elif noti.ntype == 95 %}
+					<div class="row p-1 justify-content-between" id="notif95{{noti.sno}}">
+						<div class="pl-2">
+							You are invited in a Meeting, <strong>{{noti.tohub.name}}</strong> .
+						</div>
+						<div class="row px-1 mx-1">
+							<div>
+								<a href=""><button type="submit"
+										class="btn btn-primary btn-sm ml-2 noti-gotohub"> Go to Meeting</button></a>
+							</div>
+							<div>
+								<form action="" class="notif-del-form95" method="post" id="{{noti.sno}}"> {% csrf_token %}
+									<div id="{{noti.sno}}"></div>
+									<input type="hidden" name="notifsno" id="{{noti.sno}}" value="{{noti.sno}}"
+										class="del95">
 									<button type="submit" class="btn btn-danger btn-sm ml-2"> Mark as Read</button>
 								</form>
 							</div>

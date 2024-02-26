@@ -2,13 +2,13 @@ from asyncore import read
 from django.shortcuts import render,redirect,HttpResponse
 from django.contrib.auth.models import User
 from django.contrib import messages
-from .models import Profile ,Post,Like,Follow,Dm,Postcomment,Predictmatch,Piro,Notification,Networkgraph,Caption,Examplecaption
+from .models import Profile ,Post,Like,Follow,Dm,Postcomment,Predictmatch,Piro,Notification,Networkgraph,Caption,Examplecaption,Hub,HubDm,Meeting,RTYPE
 from django.contrib.auth import authenticate,login,logout
 from django.contrib.auth.decorators import login_required
 from collections import deque,defaultdict
 from itertools import chain
 import random
-from .forms import ProfileUpdateForm,PredictDataFrom,NetworkGraphPremiumForm,NetworkGraphBoosterForm,CaptionForm,ExampleCaptionsForm
+from .forms import ProfileUpdateForm,PredictDataFrom,NetworkGraphPremiumForm,NetworkGraphBoosterForm,CaptionForm,ExampleCaptionsForm,HubCreateForm
 from sklearn.tree import DecisionTreeClassifier
 import joblib
 from dashboard.templatetags import extras
@@ -22,6 +22,8 @@ import imghdr
 import cv2
 import tensorflow as tf
 import numpy as np
+import time
+from celery import shared_task
 # Create your views here.
 @login_required
 def index(request):
@@ -292,7 +294,7 @@ def customlogin(request):
             email_from=conf_settings.EMAIL_HOST_USER
             recipient_list = [user.email, ]
             # print(recipient_list)
-            send_mail( subject, message, email_from, recipient_list )
+            # send_mail( subject, message, email_from, recipient_list )
             return redirect('dashboard-index')
         else:
             messages.warning(request,'Invalid Credentials. Please put down correct username and password')
@@ -330,7 +332,6 @@ def accountsettings(request):
     if request.method=="POST":
         deluser=request.POST.get('deluser')
         # print(deluser)
-        
         User.objects.get(id=deluser).delete()
         return redirect('login')
     context={'userprofile':userprofile}
@@ -340,11 +341,15 @@ def accountsettings(request):
 def upload(request):
     # return HttpResponse('upload')
     if request.method=='POST':
+        upload_start_time=time.time()
         user=request.user
         image=request.FILES.get('imageupload')
         caption=request.POST.get('caption')
         post=Post.objects.create(user=user,image=image,caption=caption)
         post.save()
+        upload_end_time=time.time()
+        upload_execution_time=upload_end_time-upload_start_time
+        # print(upload_execution_time)
         return redirect('dashboard-index')
     else:
         return redirect('dashboard-index')
@@ -498,7 +503,6 @@ def dms(request):
                 fromusers.append(dm)
                 recentusers.add(touser)
     # print(fromusers,recentusers)
-    
     context={'userprofile':userprofile,'fromusers':fromusers,'allotherprofiles':allotherprofiles}|notidict
     return render(request,'dms.html',context)
 
@@ -554,6 +558,7 @@ def dm(request,slug):
 def postdm(request):
     # return HttpResponse('posting dm')
     userprofile=Profile.objects.get(user=request.user)
+    
     if request.method=='POST':
         chat=request.POST.get('chat')
         parentsno=request.POST.get('parentsno')
@@ -596,6 +601,7 @@ def postcomment(request):
 def predict(request,slug):
     # return HttpResponse(f'predict-{slug}')
     userprofile=Profile.objects.get(user=request.user)
+    
     try:
         predictions=Predictmatch.objects.get(user1=request.user,user2=User.objects.get(username=slug))
         user1profile=Profile.objects.get(user=request.user)
@@ -628,6 +634,7 @@ def dmdelete(request):
 def piro(request):
     # return HttpResponse('piro register')
     userprofile=Profile.objects.get(user=request.user)
+    
     notifics=notifications(request.user)
     notidict={'notifics':notifics}
     context={'userprofile':userprofile}|notidict
@@ -737,3 +744,156 @@ def caption(request):
         form=CaptionForm() 
     context={'userprofile':userprofile,'form':form,'resultclass':resultclass}|notidict
     return render(request,'caption.html',context)
+
+@login_required
+def hubs(request):
+    # return HttpResponse('hubs')
+    userprofile=Profile.objects.get(user=request.user)
+    notifics=notifications(request.user)
+    notidict={'notifics':notifics}
+    user_hubs=Hub.objects.filter(members=request.user)
+    # print(user_hubs)
+    if request.method == 'POST':
+        form=HubCreateForm(request.POST)
+        if form.is_valid():
+            name=form.data.get('name')
+            members=form.cleaned_data.get('members')
+            # print(name,members,head)
+            hub=Hub.objects.create(name=name,head=request.user)
+            hub.members.set(members)
+            for m in members:
+                newnotif=Notification(nfromuser=request.user,ntouser=m,ntype=94,tohub=hub)
+                newnotif.save()
+            hub.members.add(request.user)
+            messages.success(request,'Hub created successfully.')
+            return redirect('hubs')
+    else:
+        form=HubCreateForm()
+    context={'userprofile':userprofile,'form':form,'user_hubs':user_hubs}|notidict
+    return render(request,'hubs.html',context)
+
+@login_required
+def hubDm(request,slug):
+    # return HttpResponse(f'hub {slug} - dms')
+    userprofile=Profile.objects.get(user=request.user)
+    hub=Hub.objects.get(sno=slug)
+    # print(hub)
+    all_dms=sorted(HubDm.objects.filter(hub=hub),key=lambda x:x.timestamp)
+    # print(all_dms)
+    replies=HubDm.objects.filter(hub=hub).exclude(parent=None)
+    # print(repliesfromtouser,repliestofromuser)
+    allreplies=sorted(replies,key=lambda x:x.timestamp)
+    # print(allreplies)
+    repdict={}
+    for reply in allreplies:
+        if reply.parent.sno not in repdict.keys():
+            repdict[reply.parent.sno]=[reply]
+        else:
+            repdict[reply.parent.sno].append(reply)
+    # print(repdict)
+    notifics=notifications(request.user)
+    notidict={'notifics':notifics}
+    context={'userprofile':userprofile,'hub':hub,'all_dms':all_dms,'repdict':repdict}|notidict
+    return render(request,'hub_dm.html',context)
+
+@login_required
+def postHubDm(request):
+    # return HttpResponse('hub dm posted')
+    userprofile=Profile.objects.get(user=request.user)
+    if request.method=='POST':
+        chat=request.POST.get('chat')
+        parentsno=request.POST.get('parentsno')
+        fromuser=request.POST.get('from_user')
+        hub_sno=request.POST.get('hub_sno')
+        fromuser=User.objects.get(username=fromuser)
+        hub=Hub.objects.get(sno=hub_sno)
+        # print(chat,parentsno)
+        if parentsno=="":
+            hub_dm=HubDm(dm_text=chat,from_user=fromuser,hub=hub,fpfp=userprofile)
+            to_users=hub.members.all()
+            for touser in to_users:
+                newnotif=Notification(nfromuser=fromuser,ntouser=touser,ntype=93,tohub=hub)
+                newnotif.save()
+            hub_dm.save()
+            messages.success(request,'message sent to hub.')
+        else:
+            parent=HubDm.objects.get(sno=parentsno)
+            hub_dm=HubDm(dm_text=chat,from_user=fromuser,hub=hub,fpfp=userprofile,parent=parent)
+            to_users=hub.members.all()
+            for touser in to_users:
+                newnotif=Notification(nfromuser=fromuser,ntouser=touser,ntype=93,tohub=hub)
+                newnotif.save()
+            hub_dm.save()
+            messages.success(request,'reply sent to hub.')
+    return redirect(f'/hubs/{hub.sno}#sendbtn')
+
+@login_required
+def meetings(request):
+    # return HttpResponse('meetings page')
+    userprofile=Profile.objects.get(user=request.user)
+    users=User.objects.all()
+    notifics=notifications(request.user)
+    notidict={'notifics':notifics}
+    user_meetings=Meeting.objects.filter(participants=request.user)
+    if userprofile.in_meeting!='0':
+        current_meeting=Meeting.objects.get(id=userprofile.in_meeting)
+    else:
+        current_meeting='0'
+    if request.method == 'POST':
+        id=request.POST.get('id')
+        if id and id[:3]=='DEL':
+            meeting=Meeting.objects.get(id=id[4:])
+            meeting.delete()
+            messages.warning(request,'Meeting deleted successfully.')
+            return redirect('meetings')
+        title=request.POST.get('title')
+        description=request.POST.get('description')
+        scheduled_date=request.POST.get('scheduled_date')
+        scheduled_time=request.POST.get('scheduled_time')
+        participants=request.POST.getlist('participants')
+        is_recurring=request.POST.getlist('is_recurring')
+        recurring_type=request.POST.get('recurring_type')
+        # print(id,title, description,scheduled_date, scheduled_time, participants, is_recurring,recurring_type,type(recurring_type))
+        if is_recurring==['on'] and recurring_type=='30':
+            messages.warning(request,'Recurring interval is not defined. Either set an interval or make it as a one time meeting.')
+            return redirect('meetings')
+        if is_recurring!=['on']: recurring_type='30'
+        if id:
+            meeting=Meeting.objects.get(id=id)
+            meeting.delete()
+        meeting=Meeting.objects.create(title=title, description=description, scheduled_date=scheduled_date, scheduled_time=scheduled_time, host=request.user,is_recurring= True if is_recurring==['on'] else False,recurring_type=int(recurring_type))
+        for i in range(len(participants)): participants[i]=User.objects.get(id=participants[i])
+        meeting.participants.set(participants)
+        for p in participants:
+            newnotif=Notification(nfromuser=request.user,ntouser=p,ntype=95)
+            newnotif.save()
+        meeting.participants.add(request.user)
+        messages.success(request,'Meeting created successfully.')
+        return redirect('meetings')
+    context={'userprofile':userprofile,'users':users,'user_meetings':user_meetings,'RTYPE':RTYPE,'current_meeting':current_meeting}|notidict
+    return render(request,'meetings.html',context)
+
+@login_required
+def videoCall(request,id):
+    # return HttpResponse(f'this is video call page for {id}')
+    userprofile=Profile.objects.get(user=request.user)
+    meeting=Meeting.objects.get(id=id)
+    if request.user not in meeting.participants.all():
+        messages.warning(request,'You are not authorised to join this meeting! Notify the host to give you access.')
+        return redirect('meetings')
+    if userprofile.in_meeting!='0' and userprofile.in_meeting!=id:
+        messages.warning(request,'You are already logged in to an existing meeting. Either rejoin the same or logout from there to join another meeting')
+        return redirect('meetings')
+    userprofile.in_meeting=id
+    userprofile.save()
+    context={'userprofile':userprofile,'id':id}
+    return render(request,'videocall.html',context)
+
+@login_required
+def meetingLogout(request):
+    # return HttpResponse('it logs out from a meeting')
+    userprofile=Profile.objects.get(user=request.user)
+    userprofile.in_meeting='0'
+    userprofile.save()
+    messages.success(request,'Successfully logged out from the meeting. You can join any meeting now.')
+    return redirect('meetings')

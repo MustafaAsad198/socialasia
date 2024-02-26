@@ -48,6 +48,10 @@ NTYPE=(
     (90,'None'),
     (91,'Follow'),
     (92,'Message'),
+    (93,'Hub Message'),
+    (94,'Hub Member'),
+    (95,'Meeting'),
+    
 )
 LTYPE=(
     (11,'Long'),
@@ -62,6 +66,12 @@ OTYPE=(
     (65,'Sea'),
     (66,'Forest'),
 )
+RTYPE=(
+    (30,'None'),
+    (31,'Daily'),
+    (32,'Weekly'),
+    (33,'Alternate'),
+)
 class Profile(models.Model):
     user=models.ForeignKey(User,on_delete=models.CASCADE)
     userid=models.IntegerField()
@@ -73,6 +83,7 @@ class Profile(models.Model):
     age=models.PositiveIntegerField()
     gender=models.IntegerField(default=-1,choices=GENDER)
     private=models.BooleanField(default=False)
+    in_meeting=models.CharField(default='',max_length=100)
 
     class Meta:
         constraints=[CheckConstraint(check=Q(age__gte=18),name='age_gte_18')]
@@ -163,19 +174,6 @@ class Piro(models.Model):
     def __str__(self):
         return f'{self.user} is a {self.type} user since {self.since}'
 
-class Notification(models.Model):
-    sno=models.AutoField(primary_key=True)
-    ntype=models.PositiveIntegerField(choices=NTYPE,default=90)
-    timestamp=models.DateTimeField(auto_now_add=True)
-    nfromuser=models.ForeignKey(User,on_delete=models.CASCADE,related_name='nfromuser')
-    ntouser=models.ForeignKey(User,on_delete=models.CASCADE)
-
-    def __str__(self) -> str:
-        return f'{self.ntouser} has notification from {self.nfromuser} for {self.ntype}'
-
-    class Meta:
-        ordering=['-timestamp']
-
 class Networkgraph(models.Model):
     sno=models.AutoField(primary_key=True)
     src=models.ForeignKey(User,on_delete=models.CASCADE)
@@ -200,3 +198,58 @@ class Examplecaption(models.Model):
 
     def __str__(self) -> str:
         return f'{self.obj} - {self.text} has length {self.contentlength} by {self.user}'
+    
+class Hub(models.Model):
+    sno=models.AutoField(primary_key=True)
+    name=models.CharField(max_length=100)
+    members=models.ManyToManyField(User, blank=True)
+    head=models.ForeignKey(User,related_name='head',on_delete=models.CASCADE,blank=True,null=True)
+
+    def __str__(self) -> str:
+        return f'{self.name}'
+    
+class HubDm(models.Model):
+    sno=models.AutoField(primary_key=True)
+    dm_text=models.TextField(blank=True)
+    from_user=models.ForeignKey(User,on_delete=models.CASCADE)
+    timestamp=models.DateTimeField(auto_now_add=True)
+    hub=models.ForeignKey(Hub, on_delete=models.CASCADE)
+    parent=models.ForeignKey('self',on_delete=models.CASCADE,null=True,blank=True)
+    fpfp=models.ForeignKey(Profile,on_delete=models.CASCADE,blank=True,null=True)
+
+    def __str__(self) -> str:
+        return f'{self.from_user} texted {self.dm_text} in {self.hub} at {self.timestamp}'
+
+class Meeting(models.Model):
+    id=models.UUIDField(primary_key=True,default=uuid.uuid4)
+    title=models.CharField(max_length=200,default='Untitled Meeting',blank=False,null=False)
+    description=models.TextField(null=True,blank=True)
+    created_time=models.DateTimeField(auto_now_add=True)
+    scheduled_date=models.DateField(blank=False,null=False)
+    scheduled_time=models.TimeField(blank=False,null=False)
+    host=models.ForeignKey(User,on_delete=models.CASCADE,related_name='host')
+    participants=models.ManyToManyField(User,blank=True)
+    is_recurring=models.BooleanField(default=False)
+    last_active_date=models.DateField(null=True,blank=True)
+    recurring_type=models.PositiveIntegerField(default=30,choices=RTYPE)
+
+    def __str__(self) -> str:
+        return f'{self.title} created by {self.host}'
+    
+    class Meta:
+        ordering = ['scheduled_date','scheduled_time']
+    
+class Notification(models.Model):
+    sno=models.AutoField(primary_key=True)
+    ntype=models.PositiveIntegerField(choices=NTYPE,default=90)
+    timestamp=models.DateTimeField(auto_now_add=True)
+    nfromuser=models.ForeignKey(User,on_delete=models.CASCADE,related_name='nfromuser')
+    ntouser=models.ForeignKey(User,on_delete=models.CASCADE,null=True)
+    tohub=models.ForeignKey(Hub,on_delete=models.CASCADE,null=True)
+    meeting=models.ForeignKey(Meeting,on_delete=models.CASCADE,null=True)
+    
+    def __str__(self) -> str:
+        return f'{self.ntouser} has notification from {self.nfromuser} for {self.ntype}'
+
+    class Meta:
+        ordering=['-timestamp']

@@ -44,8 +44,6 @@
             <a href="#posts"><button type="button" class="btn btn-primary m-4">
                     Posts <span class="badge badge-light">{{userposts|length}}</span>
                 </button></a>
-
-
             <!--Followers Button trigger modal -->
             <button type="button" class="btn btn-primary m-4" data-toggle="modal" data-target="#exampleModalFollowers">
                 Followers <span class="badge badge-light">{{followersprofile|length}}</span>
@@ -71,13 +69,10 @@
                                     <a
                                         href="/profile/{{followerprofile.user.username}}"><span>@{{followerprofile.user.username}}</span></a>
                                 </div>
-
                             </div>
                             <hr>
                             {% endfor %}
-
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -91,7 +86,7 @@
                 <div class="modal-dialog modal-dialog-scrollable">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">{{vieweduserprofile.user.username}} Following
+                            <h5 class="modal-title" id="exampleModalLabel">{{vieweduserprofile.user.username}} is Following
                             </h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
@@ -106,20 +101,13 @@
                                     <a
                                         href="/profile/{{followi.user.username}}"><span>@{{followi.user.username}}</span></a>
                                 </div>
-
                             </div>
                             <hr>
                             {% endfor %}
-
                         </div>
-
                     </div>
                 </div>
             </div>
-
-
-
-
             <form action="/follow/" method="post"> {% csrf_token %}
                 <input type="hidden" name="user" value="{{vieweduserprofile.user.username}}">
                 <input type="hidden" name="follower" value="{{user.username}}">
@@ -139,9 +127,10 @@
             aria-expanded="false">More Actions </button>
         <div class="dropdown-menu">
             <button type="button" class="btn btn-transparent dropdown-item" data-toggle="modal"
-                data-target="#exampleModal2">
+                data-target="#exampleModal2"><i class='bx bxs-message-square-x'></i>
                 Delete Posts
             </button>
+            <a class="dropdown-item" href="{% url "meetings" %}"><i class='bx bxs-video' style='color:#111010'  ></i>&nbsp;Your Meetings</a>
         </div>
     </div>
     <div class="modal fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
@@ -156,7 +145,6 @@
                 </div><br>
                 <h6 class="px-4">Check ☑ the Posts you want to delete.</h6>
                 <hr>
-
                 <div class="modal-body">
                     <form action="" method="post" id="post-del-form"> {% csrf_token %}
                         {% for post in userposts %}
@@ -198,6 +186,4 @@
     </div>
     {% endif %}
 </div>
-
-
 {% endblock content %}

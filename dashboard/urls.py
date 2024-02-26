@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import path,include
 from . import views
+
 urlpatterns = [
     path('',views.index,name='dashboard-index'),
     path('register/',views.register,name='register'),
@@ -28,6 +29,12 @@ urlpatterns = [
     path('notifaccept',views.notifaccept,name='notifaccept'),
     path('networkgraphcreate/<int:sno>',views.networkgraphcreate,name='networkgraphcreate'),
     path('caption',views.caption,name='caption'),
+    path('hubs/',views.hubs,name='hubs'),
+    path('hubs/<str:slug>',views.hubDm,name='hub'),
+    path('hubs/posthubdm/',views.postHubDm,name='posthubdm'),
+    path('meetings/',views.meetings,name='meetings'),
+    path('meeting/<str:id>',views.videoCall,name='meeting'),
+    path('meetinglogout/',views.meetingLogout,name='meetinglogout'),
     
 
 ]

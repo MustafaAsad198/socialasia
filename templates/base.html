@@ -11,6 +11,7 @@
         integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
     <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
     <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhai+2&family=Bree+Serif&display=swap" rel="stylesheet">
+    
     <title>{% block title %}{% endblock title %}</title>
     <style>
         * {
@@ -152,6 +153,10 @@
         }
         .uploadbtn{
             min-width: 57vw;
+        }
+        .dm-box{
+            overflow-y: auto;
+            height: 43vh;
         }
     </style>
 
@@ -303,6 +308,63 @@
         $(document).on('submit','.notif-del-form92',function(e){
             delnotifid=this.id.toString();
             notifdel='#notif92'+delnotifid
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+            url:'{% url "notifdeletedm" %}',
+            data:
+            {
+                notifsno:delnotifid,
+            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                        },
+            success:function(){
+                $(notifdel).css({"display":"none"});
+                //alert('notif Deleted.');
+                            }
+                        })
+                });
+
+        $(document).on('submit','.notif-del-form93',function(e){
+            delnotifid=this.id.toString();
+            notifdel='#notif93'+delnotifid
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+            url:'{% url "notifdeletedm" %}',
+            data:
+            {
+                notifsno:delnotifid,
+            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                        },
+            success:function(){
+                $(notifdel).css({"display":"none"});
+                //alert('notif Deleted.');
+                            }
+                        })
+                });
+
+        $(document).on('submit','.notif-del-form94',function(e){
+            delnotifid=this.id.toString();
+            notifdel='#notif94'+delnotifid
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+            url:'{% url "notifdeletedm" %}',
+            data:
+            {
+                notifsno:delnotifid,
+            csrfmiddlewaretoken:$('input[name=csrfmiddlewaretoken]').val()
+                        },
+            success:function(){
+                $(notifdel).css({"display":"none"});
+                //alert('notif Deleted.');
+                            }
+                        })
+                });
+
+        $(document).on('submit','.notif-del-form95',function(e){
+            delnotifid=this.id.toString();
+            notifdel='#notif95'+delnotifid
             e.preventDefault();
             $.ajax({
                 type:'POST',

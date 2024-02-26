@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% load extras %}
+{% load crispy_forms_tags %}
+{% block title %}Hubs messages page - {{userprofile.user.username}}{% endblock title %}
+{% block content %}
+<div class="container home-content">
+	{% for message in messages %}
+        <div class="alert alert-{{ message.tags }} alert-dismissible mb-2 fade show" role="alert">
+            <strong>{{message}}</strong>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    {% endfor %}
+	<h3>Your Hubs: <div class='float-right'><button type="button" class="btn" data-toggle="modal"
+				data-target="#exampleModalhub">
+				<i class='bx bxs-message-alt-add' style='color:#0f0e0e;font-size:xxx-large;'></i>
+			</button></div>
+	</h3>
+	<h5>Showing messages from {{user_hubs|length}} hub{{user_hubs|length|pluralize}}.</h5>
+	<div class="modal fade" id="exampleModalhub" tabindex="-1" aria-labelledby="exampleModalLabelhub"
+		aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="exampleModalLabelhub">Hub Details</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<form action="" method="post"> {% csrf_token %}
+					<div class="modal-body">
+						{{ form|crispy }}
+						<p style='font-size:small;'>Add the participants by putting a check ☑</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+						<button type="submit" class="btn btn-dark">Create Hub</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+	{% comment %} <form action="dmsearch/" method="post">{% csrf_token %}
+		<label>Start a Chat, Look for a Hub here...
+			<input class="form-control" list="dmsearch" name="dmsearch">
+			<datalist id="dmsearch">
+				<option value="">Select...</option>
+				{% for aop in allotherprofiles %}
+				<option value="{{aop.user}}">{{aop.user.username}}</option>
+				{% endfor %}
+			</datalist>
+		</label>
+		<button type="submit" class="btn btn-dark btn-sm ml-2">Search</button>
+	</form> {% endcomment %}
+	<hr>
+	<div class="list-group my-2 p-2 col-md-8 offset-md-2">
+		{% for uh in user_hubs %}
+		<a href="/hubs/{{uh.sno}}" class="list-group-item list-group-item-action mb-1">
+			<div class="d-flex w-100 justify-content-between d-flex justify-content-between align-items-center">
+				<h5 class="mb-1">
+					{{uh.name}}
+				</h5>
+				<small>{{fu.timestamp|naturaltime}}</small>
+				<span class="badge badge-primary badge-pill">0</span>
+			</div>
+			<p class="mb-1"><span><b>{{fu.fromuser}}</b> :</span>&nbsp; {{fu.dmtext}}</p>
+		</a>
+		{% endfor %} 
+	</div>
+</div>
+
+{% endblock content %}
+
+<i class='bx bx-user-x' style='color:#FF0000;font-size:xx-large;'></i>

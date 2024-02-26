@@ -1,24 +1,24 @@
 {% extends 'base.html' %}
 {% load humanize %}
 {% load extras %}
-{% block title %}{{userprofile.user.username}}'s DM with {{slug}}{% endblock title %}
+{% block title %}{{userprofile.user.username}} Chatting in {{hub.name}}{% endblock title %}
 {% block content %}
 <div class="container home-content">
-    <h3>Chatting with {{slug}}...</h3><a href="#sendbtn"><i
+    <h3>Chatting with your buddies in {{hub.name}}...</h3><a href="#sendbtn"><i
             class='bx bxs-down-arrow-square bx-flip-horizontal bx-fade-up'
             style='color:#3d3838; font-size:xxx-large;'></i></a>
     <div class="dm-box">
-        {% for adm in alldms %}
-        {% if adm.fromuser.username == userprofile.user.username %}
+        {% for adm in all_dms %}
+        {% if adm.from_user.username == userprofile.user.username and not adm.parent %}
         {% comment %} from user side {% endcomment %}
         <div
             class="row ml-auto my-3 border border-success rounded-left py-2 mx-0 w-75 shadow p-3 mb-5 bg-secondary rounded">
             <div class="col-md-1"><img class="rounded-circle d-block border border-dark" src="{{adm.fpfp.pfp.url}}"
                     alt="user_icon" width="40px">
             </div>
-            <div class="col-md-11"><b>{{adm.fromuser}}</b> <span class="badge badge-light text-dark">
+            <div class="col-md-11"><b>{{adm.from_user}}</b> <span class="badge badge-light text-dark">
                     {{adm.timestamp | naturaltime}} </span>
-                {% if adm.fromuser == userprofile.user %}
+                {% if adm.from_user == userprofile.user %}
                 <span class="dropright">
                     <button class="btn btn-transparent dropdown-toggle" type="button" data-toggle="dropdown"
                         aria-expanded="false"></button>
@@ -54,7 +54,7 @@
                 </div>
                 {% endif %}
                 <div class="text-white">
-                    {{adm.dmtext}}
+                    {{adm.dm_text}}
                 </div>
                 <div class="reply mx-0 my-2">
                     <button class="btn btn-sm btn-outline-light my-4 my-sm-0" type="button" data-toggle="collapse"
@@ -63,17 +63,15 @@
                     </button>
                     <div class="collapse" id="replybox{{adm.sno}}">
                         <div class="card card-body my-2">
-                            <form action="postdm/" method="post">{% csrf_token %}
+                            <form action="" method="post">{% csrf_token %}
                                 <div class="form-group">
                                     <label for="chat">Put Down Your Reply</label>
                                     <textarea class="form-control" name="chat" rows="1"
                                         placeholder="Type your reply"></textarea>
                                     <input type="hidden" name="parentsno" value="{{adm.sno}}">
                                 </div>
-
-                                <input type="hidden" name="fromuser" value="{{userprofile.user}}">
-                                <input type="hidden" name="touser" value="{{touserprofile.user}}">
-
+                                <input type="hidden" name="from_user" value="{{userprofile.user}}">
+                                <input type="hidden" name="hub" value="{{hub}}">
                                 <button type="submit" class="btn btn-outline-dark my-2 my-sm-0">Send Reply</button>
                             </form>
                         </div>
@@ -86,9 +84,9 @@
                                 src="{{reply.fpfp.pfp.url}}" alt="user_icon">
                         </div>
                         <div class="col-md-11">
-                            <b> {{reply.fromuser}} replied </b> &nbsp; <span class="badge badge-light">
+                            <b> {{reply.from_user}} replied </b> &nbsp; <span class="badge badge-light">
                                 {{reply.timestamp | naturaltime}} </span>
-                            {% if reply.fromuser == userprofile.user %}
+                            {% if reply.from_user == userprofile.user %}
                             <span class="dropright">
                                 <button class="btn btn-transparent dropdown-toggle" type="button" data-toggle="dropdown"
                                     aria-expanded="false"></button>
@@ -128,7 +126,7 @@
                             </div>
                             {% endif %}
                             <div class="text-white">
-                                {{reply.dmtext}}
+                                {{reply.dm_text}}
                             </div>
                             <hr>
                         </div>
@@ -137,15 +135,15 @@
                 </div>
             </div>
         </div>
-        {% else %}
+        {% elif adm.from_user.username != userprofile.user.username and not adm.parent %}
         {% comment %} to user side {% endcomment %}
         <div class="row my-3 border border-success rounded-right py-2 mx-0 w-75 shadow p-3 mb-5 bg-white rounded">
             <div class="col-md-1"><img class="rounded-circle d-block border border-dark" src="{{adm.fpfp.pfp.url}}"
                     alt="user_icon" width="40px">
             </div>
-            <div class="col-md-11"><b>{{adm.fromuser}}</b> <span class="badge badge-secondary">
+            <div class="col-md-11"><b>{{adm.from_user}}</b> <span class="badge badge-secondary">
                     {{adm.timestamp | naturaltime}} </span>
-                {% if adm.fromuser == userprofile.user %}
+                {% if adm.from_user == userprofile.user %}
                 <span class="dropright">
                     <button class="btn btn-transparent dropdown-toggle" type="button" data-toggle="dropdown"
                         aria-expanded="false"></button>
@@ -181,7 +179,7 @@
                 </div>
                 {% endif %}
                 <div>
-                    {{adm.dmtext}}
+                    {{adm.dm_text}}
                 </div>
                 <div class="reply mx-0 my-2">
                     <button class="btn btn-sm btn-outline-dark my-4 my-sm-0" type="button" data-toggle="collapse"
@@ -190,16 +188,15 @@
                     </button>
                     <div class="collapse" id="replybox{{adm.sno}}">
                         <div class="card card-body my-2">
-                            <form action="postdm/" method="post">{% csrf_token %}
+                            <form action="posthubdm/" method="post">{% csrf_token %}
                                 <div class="form-group">
                                     <label for="chat">Put Down Your Reply</label>
                                     <textarea class="form-control" name="chat" rows="1"
                                         placeholder="Type your reply"></textarea>
                                     <input type="hidden" name="parentsno" value="{{adm.sno}}">
                                 </div>
-                                <input type="hidden" name="fromuser" value="{{userprofile.user}}">
-                                <input type="hidden" name="touser" value="{{touserprofile.user}}">
-
+                                <input type="hidden" name="from_user" value="{{userprofile.user}}">
+                                <input type="hidden" name="hub_sno" value="{{hub.sno}}">
                                 <button type="submit" class="btn btn-outline-dark my-2 my-sm-0">Send Reply</button>
                             </form>
                         </div>
@@ -212,9 +209,9 @@
                                 src="{{reply.fpfp.pfp.url}}" alt="user_icon">
                         </div>
                         <div class="col-md-11">
-                            <b> {{reply.fromuser}} replied </b> &nbsp;<span class="badge badge-secondary text-light">
+                            <b> {{reply.from_user}} replied </b> &nbsp;<span class="badge badge-secondary text-light">
                                 {{reply.timestamp | naturaltime}} </span>
-                            {% if reply.fromuser == userprofile.user %}
+                            {% if reply.from_user == userprofile.user %}
                             <span class="dropright">
                                 <button class="btn btn-transparent dropdown-toggle" type="button" data-toggle="dropdown"
                                     aria-expanded="false"></button>
@@ -254,7 +251,7 @@
                             </div>
                             {% endif %}
                             <div>
-                                {{reply.dmtext}}
+                                {{reply.dm_text}}
                             </div>
                             <hr>
                         </div>
@@ -268,14 +265,14 @@
     <div id="sendbtn"></div>
     </div>
         <div class="my-2 p-2">
-            <form action="postdm/" method="post">{% csrf_token %}
+            <form action="posthubdm/" method="post">{% csrf_token %}
                 <div class="form-group">
                     <label for="chat">Drop a message</label>
                     <textarea class="form-control" name="chat" rows="2"
                         placeholder="Type your messsage here..."></textarea>
                 </div>
-                <input type="hidden" name="fromuser" value="{{userprofile.user}}">
-                <input type="hidden" name="touser" value="{{touserprofile.user}}">
+                <input type="hidden" name="from_user" value="{{userprofile.user}}">
+                <input type="hidden" name="hub_sno" value="{{hub.sno}}">
                 <input type="hidden" name="parentsno" value="">
                 <button type="submit" class="btn btn-outline-dark my-2 my-sm-0">Send</button>
             </form>

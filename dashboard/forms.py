@@ -1,5 +1,12 @@
+from typing import Any, Dict, Mapping, Optional, Type, Union
 from django import forms
-from .models import Profile,Predictmatch,Networkgraph,Caption,Examplecaption
+from django.core.files.base import File
+from django.db.models.base import Model
+from django.forms.utils import ErrorList
+from .models import Profile,Predictmatch,Networkgraph,Caption,Examplecaption,Hub,HubDm,Meeting
+from django.contrib.auth.models import User
+from django.contrib.admin.widgets import AdminSplitDateTime,AdminDateWidget,AdminTimeWidget
+
 
 class ProfileUpdateForm(forms.ModelForm):
     class Meta:
@@ -33,3 +40,13 @@ class ExampleCaptionsForm(forms.ModelForm):
         widgets={
             'summary':forms.Textarea(attrs={'rows':2})
         }
+
+class HubCreateForm(forms.ModelForm):
+    class Meta:
+        model=Hub
+        fields=['name','members']
+    members = forms.ModelMultipleChoiceField(
+        queryset=User.objects.all(),
+        widget=forms.CheckboxSelectMultiple
+    )
+

@@ -4,7 +4,7 @@
 {% block content %}
 <div class="container home-content">
 	<h3>Your DMs:</h3>
-	<h5>You have messages from {{fromusers|length}} user{{fromusers|length|pluralize}}.</h5>
+	<h5>Showing messages from {{fromusers|length}} user{{fromusers|length|pluralize}}.</h5>
 	
 	<form action="dmsearch/" method="post">{% csrf_token %}
 		<label>Start a Chat, Look for a User here...
@@ -13,7 +13,6 @@
 				<option value="">Select...</option>
 				{% for aop in allotherprofiles %}
 				<option value="{{aop.user}}">{{aop.user.username}}</option>
-				
 				{% endfor %}
 			</datalist>
 		</label>
