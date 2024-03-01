@@ -342,6 +342,7 @@
                             }
                         })
                 });
+        
 
         $(document).on('submit','.notif-del-form94',function(e){
             delnotifid=this.id.toString();
@@ -409,6 +410,27 @@
 
 
         $('#result').popover();
+        document.querySelector('#search_participant').addEventListener('input',filterparticipant)
+        function filterparticipant(){
+            search_inp=document.querySelector('#search_participant').value;
+            all_participants=document.querySelectorAll('.participant-username')
+            all_email=document.querySelectorAll('.participant-email')
+            all_participants.forEach((item)=>{
+                txt=item.innerText
+                if(txt.includes(search_inp)) {
+                    item.parentElement.parentElement.parentElement.parentElement.style.display=""
+                }
+                else{
+                    item.parentElement.parentElement.parentElement.parentElement.style.display="none"
+                }
+            });
+            all_email.forEach((item)=>{
+                txt=item.innerText
+                if(txt.includes(search_inp) && item.parentElement.parentElement.parentElement.parentElement.style.display=="none") {
+                    item.parentElement.parentElement.parentElement.parentElement.style.display=""
+                }
+            });
+        }
     </script>
 
     <!-- Option 2: Separate Popper and Bootstrap JS -->

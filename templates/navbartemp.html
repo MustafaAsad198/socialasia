@@ -187,7 +187,7 @@
 						<div class="row px-1 mx-1">
 							<div>
 								<a href="/hubs/{{noti.tohub.sno}}"><button type="submit"
-										class="btn btn-primary btn-sm ml-2 noti-gotohub"> Go to Hub</button></a>
+										class="btn btn-primary btn-sm ml-2 noti-gotohub" class="notif-del-godm93" id="{{noti.sno}}"> Go to Hub</button></a>
 							</div>
 							<div>
 								<form action="" class="notif-del-form93" method="post" id="{{noti.sno}}"> {% csrf_token %}
@@ -222,11 +222,11 @@
 					{% elif noti.ntype == 95 %}
 					<div class="row p-1 justify-content-between" id="notif95{{noti.sno}}">
 						<div class="pl-2">
-							You are invited in a Meeting, <strong>{{noti.tohub.name}}</strong> .
+							You are invited in a meeting, <strong>{{noti.meeting.title}}</strong>.
 						</div>
 						<div class="row px-1 mx-1">
 							<div>
-								<a href=""><button type="submit"
+								<a href="{% url "meeting" noti.meeting.id %}"><button type="submit"
 										class="btn btn-primary btn-sm ml-2 noti-gotohub"> Go to Meeting</button></a>
 							</div>
 							<div>
@@ -234,7 +234,7 @@
 									<div id="{{noti.sno}}"></div>
 									<input type="hidden" name="notifsno" id="{{noti.sno}}" value="{{noti.sno}}"
 										class="del95">
-									<button type="submit" class="btn btn-danger btn-sm ml-2"> Mark as Read</button>
+									<button type="submit" class="btn btn-danger btn-sm ml-2"> Ignore for now</button>
 								</form>
 							</div>
 						</div>

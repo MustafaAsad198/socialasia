@@ -13,7 +13,7 @@ class PiroAdmin(admin.ModelAdmin):
     list_display=('user','since','type')
 
 class NotificationAdmin(admin.ModelAdmin):
-    list_display=('ntype','timestamp','nfromuser','ntouser','tohub')
+    list_display=('ntype','timestamp','nfromuser','ntouser','tohub','meeting')
 
 class CaptionAdmin(admin.ModelAdmin):
     list_display=('sno','inpimage')
@@ -33,7 +33,7 @@ class HubDmAdmin(admin.ModelAdmin):
     list_display=('sno','dm_text','from_user','hub','parent','timestamp')
 
 class MeetingAdmin(admin.ModelAdmin):
-    list_display=('id','title','host','created_time','scheduled_date','scheduled_time','get_participants','is_recurring','recurring_type')
+    list_display=('id','title','host','created_time','scheduled_date','scheduled_time','get_participants','is_recurring','recurring_type','last_active_date')
     def get_queryset(self, request):
         qs= super().get_queryset(request)
         return qs.prefetch_related('participants')

@@ -24,6 +24,7 @@ import tensorflow as tf
 import numpy as np
 import time
 from celery import shared_task
+import datetime
 # Create your views here.
 @login_required
 def index(request):
@@ -601,7 +602,6 @@ def postcomment(request):
 def predict(request,slug):
     # return HttpResponse(f'predict-{slug}')
     userprofile=Profile.objects.get(user=request.user)
-    
     try:
         predictions=Predictmatch.objects.get(user1=request.user,user2=User.objects.get(username=slug))
         user1profile=Profile.objects.get(user=request.user)
@@ -792,6 +792,8 @@ def hubDm(request,slug):
             repdict[reply.parent.sno].append(reply)
     # print(repdict)
     notifics=notifications(request.user)
+    for n in notifics:
+        if n.tohub==hub: n.delete()
     notidict={'notifics':notifics}
     context={'userprofile':userprofile,'hub':hub,'all_dms':all_dms,'repdict':repdict}|notidict
     return render(request,'hub_dm.html',context)
@@ -835,10 +837,17 @@ def meetings(request):
     notifics=notifications(request.user)
     notidict={'notifics':notifics}
     user_meetings=Meeting.objects.filter(participants=request.user)
-    if userprofile.in_meeting!='0':
-        current_meeting=Meeting.objects.get(id=userprofile.in_meeting)
-    else:
-        current_meeting='0'
+    for um in user_meetings:
+        if datetime.date.today()+datetime.timedelta(hours=21)>um.scheduled_date:
+            if um.recurring_type==31: um.scheduled_date+=datetime.timedelta(hours=24)
+            elif um.recurring_type==32: um.scheduled_date+=datetime.timedelta(hours=168)
+            elif um.recurring_type==33: um.scheduled_date+=datetime.timedelta(hours=48)
+            elif um.recurring_type==30:
+                um.delete()
+                continue
+            um.save()
+    if userprofile.in_meeting!='0': current_meeting=Meeting.objects.get(id=userprofile.in_meeting)
+    else: current_meeting='0'
     if request.method == 'POST':
         id=request.POST.get('id')
         if id and id[:3]=='DEL':
@@ -865,7 +874,7 @@ def meetings(request):
         for i in range(len(participants)): participants[i]=User.objects.get(id=participants[i])
         meeting.participants.set(participants)
         for p in participants:
-            newnotif=Notification(nfromuser=request.user,ntouser=p,ntype=95)
+            newnotif=Notification(nfromuser=request.user,ntouser=p,ntype=95,meeting=meeting)
             newnotif.save()
         meeting.participants.add(request.user)
         messages.success(request,'Meeting created successfully.')
@@ -878,12 +887,17 @@ def videoCall(request,id):
     # return HttpResponse(f'this is video call page for {id}')
     userprofile=Profile.objects.get(user=request.user)
     meeting=Meeting.objects.get(id=id)
+    notifics=notifications(request.user)
+    for n in notifics:
+        if n.meeting==meeting: n.delete()
     if request.user not in meeting.participants.all():
         messages.warning(request,'You are not authorised to join this meeting! Notify the host to give you access.')
         return redirect('meetings')
     if userprofile.in_meeting!='0' and userprofile.in_meeting!=id:
         messages.warning(request,'You are already logged in to an existing meeting. Either rejoin the same or logout from there to join another meeting')
         return redirect('meetings')
+    meeting.last_active_date=datetime.date.today()
+    meeting.save()
     userprofile.in_meeting=id
     userprofile.save()
     context={'userprofile':userprofile,'id':id}

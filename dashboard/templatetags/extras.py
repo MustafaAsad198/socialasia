@@ -41,6 +41,3 @@ def get_24_hours_time(time):
 def get_date(date):
     return date.strftime("%Y-%m-%d")
 
-@register.filter(name='get_authorised_user')
-def get_authorised_user(auth_users,user):
-    return

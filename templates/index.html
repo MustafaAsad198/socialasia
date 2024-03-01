@@ -26,20 +26,15 @@
                 <div class="card-header">
                     <div class="row">
                         <div class="post-header px-2 w-100 d-flex justify-content-between">
-
                             {% with post.user|get_prof as profile %}
                             <div>
                                 <a href="/profile/{{post.user.username}}" class="user-profile-icon">
-
                                     <img src="{{profile.pfp.url}}" width="40px" class="rounded-circle img-thumbnail"
                                         alt="u">
                                     <span>@{{profile.user.username}}</span>
-
                                 </a>
                             </div>
-                            {% endwith %}
-                            
-                            
+                            {% endwith %}                                               
                         </div>
                     </div>
                 </div>
@@ -120,7 +115,6 @@
                             {{comm.comment}}</p>
                     </div>
                     {% endfor %}
-
                 </div>
                 <form action="" method="post" id="comment-form"> {% csrf_token %}
                     <div class="input-group input-group-sm mb-3 p-2">

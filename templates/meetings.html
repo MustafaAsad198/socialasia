@@ -64,17 +64,24 @@
 						<h6>Participants</h6>
 						<p style='font-size:small;'>Add the authorised participants by putting a check ☑</p>
 						<div class="form-group ">
-							{% for u in users %}
-							<div class="col mb-4">
-								<div class="input-group-text">
-									<input type="checkbox" id="{{u.id}}" aria-label="Checkbox for following text input"
-										name="participants" class="form-check-input" value="{{u.id}}">
-									<label class="form-check-label" for="{{u.id}}">
-										{{u}}
-									</label>
-								</div>
+							<input type="text" class="form-control mb-1" id="search_participant" aria-describedby="textHelp" name='search_participant' placeholder="Enter Username or email of participant">
+							<div class="add-participants p-2 mb-2 pre-scrollable">
+								<ul style="list-style-position:inside;list-style-type:none;margin-left:-3em;">
+								{% for u in users %}
+								<li>
+									<div class="col mb-4">
+										<div class="input-group-text">
+											<input type="checkbox" id="{{u.id}}" aria-label="Checkbox for following text input"
+												name="participants" class="form-check-input" value="{{u.id}}">
+											<label class="form-check-label" for="{{u.id}}">
+												<strong class="participant-username">{{u}}</strong>&nbsp;<small class="participant-email">({{u.email}})</small>
+											</label>
+										</div>
+									</div>
+								</li>
+								{% endfor %}
+								</ul>
 							</div>
-							{% endfor %}
 						</div>
 						<hr>
 						<div class="form-check">
@@ -118,7 +125,17 @@
 						{% endfor %}
 					</div>
 				</div>
-				<span class="badge badge-primary badge-pill">{{um.scheduled_date}} - {{um.scheduled_time}}</span>
+				<span class="badge badge-primary badge-pill">{{um.scheduled_date}} - {{um.scheduled_time}} (
+					{% if um.recurring_type == 30 %}
+					Regular
+					{% elif um.recurring_type == 31 %}
+					Daily
+					{% elif um.recurring_type == 32 %}
+					Weekly
+					{% elif um.recurring_type == 33 %}
+					Alternate
+					{% endif %}
+					)</span>
 				{% if um.host == userprofile.user %}
 				<div class="dropright">
 					<button class="btn btn-transparent dropdown-toggle" type="button" data-toggle="dropdown"
