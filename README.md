@@ -1,4 +1,4 @@
-***Some features cannot be implemented on the deployed website for now because it uses advanced python libraries for ML or graph plotting (like sklearn,numpy,networkx,matplotplib,Tensorflow,Keras) and shitty Python Anywhere does not provide enough space to install all these packages (They all work fine on localserver). Sorry for the inconvenience caused***
+***Some features cannot be implemented on the deployed website for now because they use advanced python libraries for ML or graph plotting (like sklearn,numpy,networkx,matplotplib,Tensorflow,Keras) and shitty Python Anywhere does not provide enough space to install all these packages (They all work fine on localserver). Sorry for the inconvenience caused***
 
 # Socialasia
 
